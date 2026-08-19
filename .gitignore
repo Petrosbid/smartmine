@@ -1,0 +1,13 @@
+.pytest_cashe/
+smartmine-back/__pycache__/
+smartmine-back/.env
+smartmine-back/.venv/
+smartmine-back/.smartmine.db
+**/__pycache__/
+ui/
+smartmine-web/dist/
+smartmine-web/node_modules/
+smartmine-web/public/**
+smartmine.db
+smartmine-web/src/assets/vite.svg
+smartmine-web/src/assets/typescript.svg
