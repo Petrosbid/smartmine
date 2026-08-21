@@ -18,6 +18,7 @@ class PerformanceAnalyzeRequest(BaseModel):
     speeding_events: int = Field(ge=0)
     harsh_braking_events: int = Field(ge=0)
     safety_events: int = Field(ge=0)
+    route_compliance: float = Field(default=95.0, ge=0, le=100)
     notes: str | None = None
 
 

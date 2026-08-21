@@ -15,29 +15,29 @@ def predict_maintenance(
 
     if temp > 90:
         risk_score += (temp - 90) * 3
-        reasons.append("High engine temperature trend")
+        reasons.append("افزایش دمای کاری موتور بالاتر از آستانه مجاز")
 
     if vib > 0.40:
         risk_score += (vib - 0.40) * 180
-        reasons.append("Increasing vibration trend")
+        reasons.append("روند صعودی ارتعاشات شاسی و موتور")
 
     if oil < 50:
         risk_score += (50 - oil) * 2
-        reasons.append("Low oil pressure")
+        reasons.append("افت فشار روغن هیدرولیک و موتور")
 
     risk_score = max(0.0, min(100.0, round(risk_score, 2)))
 
     if risk_score >= 75:
         risk_level = RiskLevel.HIGH
-        recommendation = "Immediate maintenance inspection is recommended"
+        recommendation = "توقف عملیات و بازرسی فنی فوری موتور و سیستم روانکاری الزامی است"
     elif risk_score >= 45:
         risk_level = RiskLevel.MEDIUM
-        recommendation = "Inspect in the next scheduled maintenance window"
+        recommendation = "بررسی سنسورها و سیستم خنک‌کننده در سرویس دوره‌ای شیفت آینده توصیه می‌شود"
     else:
         risk_level = RiskLevel.LOW
-        recommendation = "Continue monitoring with routine checks"
+        recommendation = "پارامترها پایدار هستند؛ ادامه پایش مستمر از طریق IIoT کافی است"
 
-    reason_text = ", ".join(reasons) if reasons else "Telemetry trend is stable"
+    reason_text = "، ".join(reasons) if reasons else "روند سنسورها و تله‌متری در وضعیت پایدار و نرمال است"
 
     return {
         "risk_level": risk_level,
@@ -45,3 +45,4 @@ def predict_maintenance(
         "reason": reason_text,
         "recommendation": recommendation,
     }
+

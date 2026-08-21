@@ -2,8 +2,10 @@ import type {
   AIMessage,
   ComparisonMetric,
   DashboardKpi,
+  DispatchRecommendation,
   Driver,
   FleetVehicle,
+
   Mission,
   NotificationItem,
   PerformanceScoreResult,
@@ -112,14 +114,17 @@ export const mapTelemetry = (telemetry: TelemetryDto): Telemetry => ({
 })
 
 export const mapMission = (mission: MissionDto): Mission => ({
+  missionId: mission.mission_id,
   truckId: mission.truck_id,
   fromShovel: mission.shovel_id,
   toCrusher: mission.crusher_id,
   distanceKm: Number(mission.distance_km.toFixed(1)),
   etaMin: mission.eta_min,
   status: missionStatusMap[mission.status] ?? 'آماده',
+  statusCode: mission.status,
   cycleTimeMin: Number(mission.cycle_time_min.toFixed(1)),
 })
+
 
 export const mapPerformanceResult = (
   performance: PerformanceAnalyzeResponseDto,
@@ -199,19 +204,15 @@ export const mapFleet = (fleet: {
 
 export const mapDispatchRecommendation = (
   recommendation: DispatchRecommendationDto,
-): {
-  recommendedShovel: string
-  estimatedCycleTime: number
-  estimatedImprovement: number
-  reason: string
-  label: string
-} => ({
+): DispatchRecommendation => ({
   recommendedShovel: recommendation.recommended_shovel,
   estimatedCycleTime: Number(recommendation.estimated_cycle_time.toFixed(1)),
   estimatedImprovement: Number(recommendation.estimated_improvement.toFixed(1)),
   reason: recommendation.reason,
-  label: 'پیشنهاد مبتنی بر داده واقعی',
+  label: 'پیشنهاد بهینه‌سازی الگوریتم دیسپچ',
+  scoreBreakdown: recommendation.score_breakdown,
 })
+
 
 export const mapComparison = (comparison: ComparisonResponseDto): ComparisonMetric[] => [
   {

@@ -8,6 +8,15 @@ class SimulationRunRequest(BaseModel):
     duration_hours: int = Field(gt=0)
 
 
+class SimulationStep(BaseModel):
+    step_hour: float
+    produced_ton: float
+    cycle_count: int
+    queue_time: float
+    fuel_liters: float
+    event_message: str
+
+
 class SimulationRunResponse(BaseModel):
     production: float
     average_queue_time: float
@@ -17,9 +26,12 @@ class SimulationRunResponse(BaseModel):
     efficiency: float
     truck_utilization: float
     note: str
+    steps: list[SimulationStep] = Field(default_factory=list)
+    event_logs: list[str] = Field(default_factory=list)
 
 
 class ComparisonResponse(BaseModel):
     traditional: dict[str, float]
     smart: dict[str, float]
     improvement: dict[str, float]
+

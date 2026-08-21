@@ -35,8 +35,12 @@ class SimulationService:
             "efficiency": 88.0,
         }
         improvement = {
-            key: round(((smart[key] - traditional[key]) / traditional[key]) * 100, 2)
-            for key in traditional
-            if traditional[key] != 0
+            "production": round(((smart["production"] - traditional["production"]) / traditional["production"]) * 100, 1),
+            "queue_time": round(((traditional["queue_time"] - smart["queue_time"]) / traditional["queue_time"]) * 100, 1),
+            "cycle_time": round(((traditional["cycle_time"] - smart["cycle_time"]) / traditional["cycle_time"]) * 100, 1),
+            "idle_time": round(((traditional["idle_time"] - smart["idle_time"]) / traditional["idle_time"]) * 100, 1),
+            "fuel_consumption": round(((traditional["fuel_consumption"] - smart["fuel_consumption"]) / traditional["fuel_consumption"]) * 100, 1),
+            "efficiency": round(smart["efficiency"] - traditional["efficiency"], 1),
         }
         return ComparisonResponse(traditional=traditional, smart=smart, improvement=improvement)
+

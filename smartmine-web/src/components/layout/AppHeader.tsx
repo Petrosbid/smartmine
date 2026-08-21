@@ -75,16 +75,6 @@ export const AppHeader = ({ onMenuClick }: AppHeaderProps) => {
           {unreadCount > 0 && <span className="icon-btn__badge">{unreadCount}</span>}
         </button>
 
-        <Button
-          type="button"
-          variant={presentationMode ? 'primary' : 'ghost'}
-          size="sm"
-          onClick={togglePresentationMode}
-          icon={<Monitor size={15} />}
-          title="تغییر حالت نمایش پرزنتیشن / عادی"
-        >
-          {presentationMode ? 'حالت پرزنتیشن' : 'پرزنتیشن'}
-        </Button>
 
         <button
           className={`icon-btn ${location.pathname === routes.profile ? 'icon-btn--active' : ''}`}

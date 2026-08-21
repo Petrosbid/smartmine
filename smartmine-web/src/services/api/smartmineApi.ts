@@ -264,11 +264,41 @@ export const smartmineApi = {
         fromShovel: shovelId,
         cycleTimeMin: 24,
         etaMin: 6,
-        status: 'در حال حرکت',
+        status: 'در مسیر شاول',
+        statusCode: 'en_route_to_shovel',
       }
       return cachedMission
     }
   },
+
+  transitionMission: async (missionId: number, status: string): Promise<Mission> => {
+    try {
+      const mission = await apiRequest<MissionDto>(`/missions/${missionId}/transition`, {
+        method: 'POST',
+        body: JSON.stringify({ status }),
+      })
+      cachedMission = mapMission(mission)
+      return cachedMission
+    } catch {
+      const statusMap: Record<string, string> = {
+        assigned: 'تخصیص داده شده',
+        en_route_to_shovel: 'در مسیر شاول',
+        waiting_for_loading: 'در انتظار بارگیری',
+        loading: 'بارگیری',
+        hauling: 'حمل بار',
+        waiting_for_dump: 'در انتظار تخلیه',
+        dumping: 'تخلیه',
+        completed: 'تکمیل شده',
+      }
+      cachedMission = {
+        ...cachedMission,
+        status: statusMap[status] ?? status,
+        statusCode: status,
+      }
+      return cachedMission
+    }
+  },
+
 
   analyzePerformance: async (payload: {
     driverId: string
@@ -356,11 +386,21 @@ export const smartmineApi = {
         idleMin: Math.round(response.idle_time),
         fuelLiters: Math.round(response.fuel_consumption),
         efficiencyPercent: Math.round(response.efficiency),
+        steps: response.steps?.map((s) => ({
+          stepHour: s.step_hour,
+          producedTon: s.produced_ton,
+          cycleCount: s.cycle_count,
+          queueTime: s.queue_time,
+          fuelLiters: s.fuel_liters,
+          eventMessage: s.event_message,
+        })),
+        eventLogs: response.event_logs,
       }
     } catch {
       return await mockSimulationService.run(config)
     }
   },
+
 
   getComparison: async (): Promise<ComparisonMetric[]> => {
     try {

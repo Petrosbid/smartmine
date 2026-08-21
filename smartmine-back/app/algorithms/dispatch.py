@@ -41,8 +41,9 @@ def recommend_dispatch(
                 "shovel_id": str(shovel["id"]),
                 "estimated_cycle_time": round(24 + queue * 1.8 + travel_time * 0.35, 2),
                 "estimated_improvement": round(max(0.0, 18 - queue * 1.2), 2),
-                "reason": f"Low queue ({int(queue)}) and shorter travel distance ({distance:.2f} km).",
+                "reason": f"صف کوتاه ({int(queue)} کامیون)، مسافت بهینه ({distance:.2f} کیلومتر) و دسترسی سریع بدون گلوگاه ترافیکی.",
             }
+
             best_breakdown = {
                 "queue_weight": round(queue_component, 2),
                 "distance_weight": round(distance_component, 2),

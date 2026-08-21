@@ -8,8 +8,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
-from app.models.mission import Crusher, Mission, Shovel
 from app.models.driver import Driver
+from app.models.mission import Crusher, Mission, Shovel
 from app.models.truck import Truck
 from app.repositories.alert_repository import AlertRepository
 from app.repositories.driver_repository import DriverRepository
@@ -205,7 +205,6 @@ class _AIContextBuilder:
                 }
                 for a in alerts
             ],
-            # Legacy keys kept for backwards compatibility with tests
             "driver_id": payload.driver_id,
             "truck_id": payload.truck_id,
             "performance_score": latest_perf.overall_score if latest_perf else None,
@@ -220,16 +219,10 @@ class _AIContextBuilder:
 
 
 # ==============================================================================
-# Domain Expert AI Reasoning Engine (High-Fidelity Offline / Resilient Fallback)
+# Domain Expert Engine (Standalone Fallback)
 # ==============================================================================
 
 class DomainExpertAIService(AIService):
-    """
-    Intelligent rule-based operational mining expert engine that synthesizes
-    full telemetry, vehicle health, shovel queues, and driver performance
-    into rich, professional Persian operational guidance.
-    """
-
     def __init__(self, db: Session) -> None:
         self.ctx_builder = _AIContextBuilder(db)
 
@@ -243,8 +236,6 @@ class DomainExpertAIService(AIService):
         telemetry = context.get("telemetry", {})
         health_info = context.get("vehicle_health", {})
         perf_info = context.get("recent_performance")
-        mission_info = context.get("current_mission")
-        shovels = context.get("pit_shovels", [])
         pred_maint = health_info.get("predictive_maintenance", {})
 
         response = self._generate_expert_response(
@@ -253,8 +244,6 @@ class DomainExpertAIService(AIService):
             telemetry=telemetry,
             health_info=health_info,
             perf_info=perf_info,
-            mission_info=mission_info,
-            shovels=shovels,
             pred_maint=pred_maint,
         )
 
@@ -309,9 +298,9 @@ class DomainExpertAIService(AIService):
 مدت زمان انتظار در صف شاول (**{payload.waiting_time:.0f} دقیقه**) و زمان درجا کار کردن موتور (**{payload.idle_time:.0f} دقیقه**) بخشی از توان تولیدی شیفت را هدر داده است.
 
 **۴. سه راهکار کلیدی برای ارتقای امتیاز در شیفت آینده:**
-۱. **کاهش زمان انتظار:** هنگام بازگشت از سنگ‌شکن، از طریق سامانه دیسپچینگ شاول‌های با تراکم کمتر (مانند شاول‌های با صف کمتر از ۲) را هدف قرار دهید.
-۲. **مدیریت درجا کار کردن (Idle Time):** در توقف‌های بیش از ۵ دقیقه در صف یا محل‌های بارگیری، دور موتور را روی حالت استاندارد نگه داشته و از روشن ماندن بیهوده خودداری نمایید.
-۳. **کنترل شیب و ریتاردر:** سرعت در رمپ‌های خروجی را در بازه پایدار ۲۵ تا ۳۰ km/h نگه دارید تا از ترمزهای ناگهانی و استهلاک لنت‌ها جلوگیری شود.
+۱. **کاهش زمان انتظار:** هنگام بازگشت از سنگ‌شکن، از طریق سامانه دیسپچینگ شاول‌های با تراکم کمتر را هدف قرار دهید.
+۲. **مدیریت درجا کار کردن (Idle Time):** در توقف‌های بیش از ۵ دقیقه در صف یا محل‌های بارگیری، از روشن ماندن بیهوده موتور خودداری نمایید.
+۳. **کنترل شیب و ریتاردر:** سرعت در رمپ‌های خروجی را در بازه پایدار ۲۵ تا ۳۰ km/h نگه دارید تا از ترمزهای ناگهانی جلوگیری شود.
 
 {advice_summary}"""
 
@@ -322,8 +311,6 @@ class DomainExpertAIService(AIService):
         telemetry: dict[str, Any],
         health_info: dict[str, Any],
         perf_info: dict[str, Any] | None,
-        mission_info: dict[str, Any] | None,
-        shovels: list[dict[str, Any]],
         pred_maint: dict[str, Any],
     ) -> str:
         truck_id = truck_info.get("id", "نامشخص")
@@ -335,15 +322,15 @@ class DomainExpertAIService(AIService):
         risk_level = pred_maint.get("risk_level", "low")
         reason = pred_maint.get("reason", "پارامترهای فنی در وضعیت پایدار هستند.")
 
-        # 1. Vehicle Health & Maintenance
         if any(w in question for w in ["سلامت", "کامیون", "موتور", "ارتعاش", "ترمز", "وضعیت فنی", "خرابی", "مکانیک"]):
             warning_header = ""
             if float(temp) > 90 or float(vibration) > 0.35 or risk_level in ["high", "medium"]:
                 warning_header = f"⚠️ **هشدار پایش فنی:** وضعیت نگهداری پیشگیرانه در سطح **{risk_level}** ارزیابی شده است.\n\n"
 
-            components_summary = []
-            for comp in health_info.get("components", []):
-                components_summary.append(f"- **{comp.get('name')}**: امتیاز سلامت {comp.get('score')}% ({comp.get('status_text')})")
+            components_summary = [
+                f"- **{comp.get('name')}**: امتیاز سلامت {comp.get('score')}% ({comp.get('status_text')})"
+                for comp in health_info.get("components", [])
+            ]
             comp_text = "\n".join(components_summary) if components_summary else "- داده‌های اجزا در حال به‌روزرسانی است."
 
             return f"""{warning_header}### 🚜 گزارش وضعیت سلامت و تله‌متری کامیون **{truck_id}**
@@ -363,7 +350,6 @@ class DomainExpertAIService(AIService):
 **💡 توصیه مهندسی نگهداری پیشگیرانه:**
 {reason}"""
 
-        # 2. Performance & Driver Score
         elif any(w in question for w in ["امتیاز", "عملکرد", "کارنامه", "پیشرفت", "راندمان", "شیفت"]):
             if perf_info and perf_info.get("overall_score") is not None:
                 overall = perf_info["overall_score"]
@@ -380,154 +366,132 @@ class DomainExpertAIService(AIService):
 
 **تفکیک شاخص‌های تخصصی:**
 - 🟢 **شاخص تولید و تناژ ({float(prod):.0f}%):** جابجایی موفق **{tonnage} تن** بار در **{cycles} چرخه**.
-- ⏱️ **شاخص بهره‌وری زمان چرخه ({float(eff):.0f}%):** زمان انتظار در صف شاول و توقف درجا کار کردن روی این شاخص موثر است.
+- ⏱️ **شاخص بهره‌وری زمان چرخه ({float(eff):.0f}%):** کنترل زمان انتظار و درجا کار کردن.
 - 🛡️ **شاخص ایمنی و رعایت مقررات ({float(saf):.0f}%):** شتاب‌گیری و ترمزگیری نرم و کنترل پایدار در رمپ‌ها.
-- ⛽ **شاخص مدیریت مصرف سوخت ({float(fuel_sc):.0f}%):** مصرف بهینه با کنترل دور موتور در شیب‌ها.
-
-**💡 توصیه‌های هوشمند جهت ارتقای امتیاز:**
-۱. برای رساندن امتیاز به بالای **۹۰**، زمان انتظار در صف شاول را با انتخاب مسیرهای خلوت‌تر کاهش دهید.
-۲. در توقف‌های بارگیری، از گاز دادن اضافی خودداری کرده و دور موتور را روی حالت بهینه (Economic RPM) نگه دارید."""
+- ⛽ **شاخص مدیریت مصرف سوخت ({float(fuel_sc):.0f}%):** مصرف بهینه با کنترل دور موتور در شیب‌ها."""
             else:
-                return "هنوز رکورد عملکردی جامعی برای شیفت جاری ثبت نشده است. پس از تکمیل و ثبت فرم ارزیابی عملکرد در بخش مربوطه، تحلیل تفصیلی هوش مصنوعی در اختیارتان قرار خواهد گرفت."
+                return "هنوز رکورد عملکردی جامعی برای شیفت جاری ثبت نشده است."
 
-        # 3. Mission & Dispatching
-        elif any(w in question for w in ["مأموریت", "ماموریت", "مسیر", "مقصد", "کجا", "تخلیه", "بارگیری"]):
-            if mission_info:
-                return f"""### 🎯 جزئیات مأموریت فعال ترابری
-
-- وضعیت مأموریت: **{mission_info.get('status', 'در حال انجام')}**
-- مبدأ (شاول بارگیری): **{mission_info.get('shovel_code')}**
-- مقصد (سنگ‌شکن / دامپ): **{mission_info.get('crusher_code')}**
-- مسافت کل رفت و برگشت: **{mission_info.get('distance_km')} کیلومتر**
-- زمان چرخه تخمینی: **{mission_info.get('cycle_time_min')} دقیقه** (زمان باقی‌مانده تا مقصد: **~{mission_info.get('eta_min')} دقیقه**)
-
-**💡 توصیه ناوبری دیسپچ:**
-پس از تخلیه در سنگ‌شکن **{mission_info.get('crusher_code')}**، ترافیک شاول‌های مجاور را در نمایشگر بررسی نمایید تا از معطلی در صف جلوگیری شود."""
-            else:
-                return "در حال حاضر مأموریت فعالی به این کامیون تخصیص نیافته است. لطفاً از صفحه «دیسپچینگ هوشمند» شاول پیشنهادی را انتخاب و دکمه اعمال مأموریت را ثبت کنید."
-
-        # 4. Shovels & Queues
-        elif any(w in question for w in ["شاول", "صف", "ترافیک", "کدام شاول", "تراکم"]):
-            shovel_lines = []
-            best_shovel = None
-            min_q = 999
-            for s in shovels:
-                q = s.get("queue_count", 0)
-                shovel_lines.append(f"- **{s.get('shovel_code')}**: صف انتظار **{q}** کامیون (وضعیت: {s.get('status')})")
-                if q < min_q:
-                    min_q = q
-                    best_shovel = s.get("shovel_code")
-
-            q_text = "\n".join(shovel_lines) if shovel_lines else "- اطلاعات شاول‌ها در دسترس نیست."
-
-            return f"""### ⛏️ تحلیل وضعیت صف و ترافیک شاول‌های معدن
-
-**وضعیت زنده صف شاول‌ها:**
-{q_text}
-
-**🎯 شاول بهینه پیشنهادی هوش مصنوعی:**
-شاول **{best_shovel}** با داشتن تنها **{min_q}** کامیون در صف، کمترین زمان انتظار و بالاترین سرعت چرخه بارگیری را برای شما فراهم می‌سازد. انتخاب این شاول زمان کل چرخه را تا **~۱۵٪** کاهش می‌دهد."""
-
-        # 5. Cycle Time & Speed Optimization
-        elif any(w in question for w in ["چرخه", "زمان", "کاهش زمان", "سرعت", "بهینه‌سازی"]):
-            return f"""### ⏱️ راهکارهای هوش مصنوعی برای کاهش زمان چرخه (Cycle Time)
-
-برای بهینه‌سازی زمان هر دور باربری و افزایش راندمان تولید، رعایت موارد زیر پیشنهاد می‌شود:
-
-۱. **انتخاب شاول‌های کم‌تراکم:** زمان انتظار در صف شاول عامل بیش از **۳۵٪** از اتلاف زمان چرخه است. همیشه شاول با صف کمتر از ۲ کامیون را اولویت دهید.
-۲. **سرعت پایدار در رمپ‌ها:** حفظ سرعت یکنواخت بین **۲۵ تا ۳۰ km/h** در سراشیبی‌ها و استفاده از ریتاردر هیدرولیکی به جای ترمزهای متوالی، علاوه بر ایمنی، از افت سرعت جلوگیری می‌کند.
-۳. **مانور سریع در پای شاول و سنگ‌شکن:** آمادگی در نقطه ورود و مانور دنده‌عقب سریع در نقطه بارگیری/تخلیه می‌تواند تا ۲ دقیقه زمان چرخه را صرفه‌جویی کند.
-۴. **پایش تله‌متری:** سرعت فعلی شما **{float(speed):.1f} km/h** است؛ حفظ این بازه سرعت در مسیرهای کفی ایده‌آل است."""
-
-        # 6. Fuel & Heat Management
-        elif any(w in question for w in ["سوخت", "گازوئیل", "مصرف", "داغ", "حرارت", "درجا"]):
-            return f"""### ⛽ راهکارهای کاهش مصرف سوخت و مدیریت دمای موتور
-
-- میزان سوخت فعلی باک: **{float(fuel):.0f}%**
-- دمای لحظه‌ای موتور: **{float(temp):.1f}°C**
-
-**توصیه‌های عملیاتی:**
-۱. **کاهش درجا کار کردن (Idle Time):** در توقف‌های بیش از ۳ دقیقه در صف شاول یا زمان استراحت، موتور را در حالت Economic قرار دهید. درجا کار کردن بیهوده تا **۱۵ لیتر در ساعت** گازوئیل هدر می‌دهد.
-۲. **شتاب‌گیری یکنواخت:** از فشردن ناگهانی پدال گاز پس از بارگیری خودداری نموده و اجازه دهید توربوشارژر و گیربکس به نرمی گشتاور لازم را اعمال کنند.
-۳. **کنترل دمای موتور در شیب‌های تند:** در سربالایی با بار کامل، با انتخاب دنده سنگین مناسب از بالا رفتن دور موتور بیش از **۱۹۰۰ RPM** و افزایش دمای کاری به بالای ۹۵°C جلوگیری کنید."""
-
-        # Default Comprehensive Intelligence Overview
         else:
             return f"""### 🤖 تحلیل وضعیت جامع ناوگان و کامیون **{truck_id}**
 
 بر اساس آخرین داده‌های مخابره‌شده از حسگرهای IIoT و سامانه دیسپچینگ:
-
-- **وضعیت فنی و سلامت:** امتیاز سلامت خودرو **{float(health_score):.0f}%** است و دمای کاری موتور برابر **{float(temp):.1f}°C** و در محدوده نرمال قرار دارد.
-- **تله‌متری لحظه‌ای:** سرعت خودرو **{float(speed):.1f} km/h** و سطح سوخت باقی‌مانده **{float(fuel):.0f}%** است.
-- **ترافیک معدن:** بر اساس داده‌های زنده، برای بهینه‌سازی زمان چرخه و جلوگیری از معطلی، شاول‌های خلوت‌تر در اولویت بارگیری قرار دارند.
-
-اگر سوال خاصی درباره **سلامت قطعات**، **کاهش زمان چرخه**، **بهینه‌سازی مصرف سوخت** یا **تحلیل عملکرد شیفت** دارید، بفرمایید تا تحلیل دقیق ارائه شود."""
+- **وضعیت فنی و سلامت:** امتیاز سلامت خودرو **{float(health_score):.0f}%** است و دمای موتور برابر **{float(temp):.1f}°C** می‌باشد.
+- **تله‌متری لحظه‌ای:** سرعت خودرو **{float(speed):.1f} km/h** و سطح سوخت باقی‌مانده **{float(fuel):.0f}%** است."""
 
 
 # ==============================================================================
-# Google Gemini Generative AI Provider
+# Google Gemini Generative AI Provider (Sanitized Key & Multi-Endpoint Fallback)
 # ==============================================================================
 
 class GoogleGenAIService(AIService):
-    """
-    Live AI service powered by Google Gemini via google-genai SDK
-    with automatic fallback to direct REST and DomainExpert engine.
-    """
+    @staticmethod
+    def _sanitize_api_key(key: str | None) -> str:
+        """پاکسازی فاصله‌ها و کوتیشن‌های احتمالی اطراف کلید API."""
+        if not key:
+            return ""
+        cleaned = str(key).strip().strip("'\"").strip()
+        return cleaned
+
+    @staticmethod
+    def _build_context_input(user_message: str, context: dict[str, Any]) -> str:
+        context_str = json.dumps(context, ensure_ascii=False, indent=2)
+        return (
+            f"=== داده‌های بلادرنگ ناوگان و تله‌متری معدن (SmartMine IIoT Live Context) ===\n"
+            f"{context_str}\n\n"
+            f"=== پیام راننده یا سرپرست معدن ===\n"
+            f"{user_message}"
+        )
 
     def __init__(self, db: Session, api_key: str, model: str) -> None:
         self.db = db
         self.ctx_builder = _AIContextBuilder(db)
-        self.fallback_expert = DomainExpertAIService(db)
-        self.api_key = api_key.strip()
-        self.model = model.strip() or "gemini-2.5-flash"
+        self.api_key = self._sanitize_api_key(api_key)
+        self.model = model.strip() if model else "gemini-2.5-flash"
         self._client: Any = None
+        self._init_error: str | None = None
 
         if not self.api_key:
-            raise ValueError("AI_API_KEY is required for Google Gemini provider")
+            self._init_error = "کلید هوش مصنوعی (API Key) مقداردهی نشده و خالی است."
+            return
 
         try:
             from google import genai
             self._client = genai.Client(api_key=self.api_key)
         except Exception as exc:
-            logger.warning("Could not initialize google-genai client (%s); will use REST fallback: %s", self.model, exc)
+            self._init_error = f"عدم امکان مقداردهی google-genai SDK: {exc}"
+            logger.warning(self._init_error)
 
     def chat(self, payload: AIChatRequest) -> AIChatResponse:
         context, error_message = self.ctx_builder.build(payload)
         if error_message:
             return AIChatResponse(message=error_message, sources=[], context={})
 
-        prompt = self._build_chat_prompt(payload.message, context)
+        if not self.api_key:
+            return AIChatResponse(
+                message="❌ خطا: کلید API جمنای (AI_API_KEY) تنظیم نشده است.",
+                sources=["gemini-error"],
+                context=context,
+            )
 
-        # 1. Try google-genai SDK client
+        user_input = self._build_context_input(payload.message, context)
+        errors_log: list[str] = []
+
+        # ۱. تلاش با SDK
         if self._client is not None:
             try:
-                result = self._client.models.generate_content(
+                interaction = self._client.interactions.create(
                     model=self.model,
-                    contents=prompt,
+                    system_instruction=MINING_AI_SYSTEM_PROMPT,
+                    input=user_input,
+                    generation_config={"temperature": 0.4},
                 )
-                generated = (result.text or "").strip()
+                generated = (interaction.output_text or "").strip()
                 if generated:
                     return AIChatResponse(
                         message=generated,
-                        sources=["gemini", self.model, "telemetry", "vehicle_health"],
+                        sources=["gemini-sdk", self.model, "telemetry", "vehicle_health"],
                         context=context,
                     )
+                else:
+                    errors_log.append("پاسخ دریافتی از SDK جمنای فاقد متن خروجی بود.")
             except Exception as exc:
-                logger.warning("google-genai SDK call failed with model %s: %s; trying REST fallback...", self.model, exc)
+                err_msg = f"خطای SDK (google-genai): {type(exc).__name__} - {str(exc)}"
+                logger.error(err_msg)
+                errors_log.append(err_msg)
+        elif self._init_error:
+            errors_log.append(self._init_error)
 
-        # 2. Try direct Google Gemini REST API
-        rest_result = self._call_gemini_rest(prompt)
+        # ۲. تلاش دوم: تماس مستقیم REST
+        rest_result, rest_error = self._call_gemini_rest(
+            system_instruction=MINING_AI_SYSTEM_PROMPT,
+            user_input=user_input,
+        )
         if rest_result:
             return AIChatResponse(
                 message=rest_result,
                 sources=["gemini-rest", self.model, "telemetry", "vehicle_health"],
                 context=context,
             )
+        if rest_error:
+            errors_log.append(f"خطای تماس مستقیم REST: {rest_error}")
 
-        # 3. Graceful fallback to Domain Expert Engine
-        logger.warning("Gemini live call was unavailable. Falling back to Domain Expert Engine.")
-        fallback_resp = self.fallback_expert.chat(payload)
-        return fallback_resp
+        error_details = "\n\n".join(f"🔸 {err}" for err in errors_log)
+        error_report = f"""⚠️ **خطا در برقراری ارتباط با سرویس Google Gemini ({self.model})**
+
+پاسخی از جمینای دریافت نشد. جزئیات خطاهای ثبت‌شده:
+{error_details}
+
+🔍 **بررسی‌های لازم جهت رفع خطای ۴۰۱:**
+۱. **فرمت کلید در `.env`:** مطمئن شوید مقدار `AI_API_KEY` داخل گیومه/کوتیشن قرار نگرفته و مستقیماً با `AIzaSy...` شروع می‌شود.
+۲. **اعتبار کلید در Google AI Studio:** کلید جدیدی از [Google AI Studio](https://aistudio.google.com/apikey) دریافت نمایید.
+۳. **پروکسی/فیلترشکن:** برای اتصال به سرورهای گوگل از ابزار تغییر IP مناسب استفاده کنید."""
+
+        return AIChatResponse(
+            message=error_report,
+            sources=["gemini-error-diag", self.model],
+            context=context,
+        )
 
     def analyze_performance(
         self,
@@ -536,8 +500,7 @@ class GoogleGenAIService(AIService):
         payload: PerformanceAnalyzeRequest,
         score: dict[str, Any],
     ) -> str:
-        prompt = (
-            f"{PERFORMANCE_COACHING_SYSTEM_PROMPT}\n\n"
+        user_input = (
             f"=== اطلاعات عملکرد شیفت راننده ===\n"
             f"کد راننده: {driver_code}\n"
             f"کد کامیون: {truck_code}\n"
@@ -563,92 +526,102 @@ class GoogleGenAIService(AIService):
             f"لطفاً تحلیل تفصیلی و توصیه‌های مربی‌گری خود را به فارسی ارائه دهید."
         )
 
+        errors: list[str] = []
         if self._client is not None:
             try:
-                result = self._client.models.generate_content(
+                interaction = self._client.interactions.create(
                     model=self.model,
-                    contents=prompt,
+                    system_instruction=PERFORMANCE_COACHING_SYSTEM_PROMPT,
+                    input=user_input,
+                    generation_config={"temperature": 0.4},
                 )
-                text = (result.text or "").strip()
+                text = (interaction.output_text or "").strip()
                 if text:
                     return text
             except Exception as exc:
-                logger.warning("Gemini performance analysis failed: %s", exc)
+                errors.append(f"SDK Error: {exc}")
 
-        rest_result = self._call_gemini_rest(prompt)
+        rest_result, rest_error = self._call_gemini_rest(
+            system_instruction=PERFORMANCE_COACHING_SYSTEM_PROMPT,
+            user_input=user_input,
+        )
         if rest_result:
             return rest_result
+        if rest_error:
+            errors.append(f"REST Error: {rest_error}")
 
-        return self.fallback_expert.analyze_performance(driver_code, truck_code, payload, score)
+        return f"⚠️ خطا در تحلیل عملکرد با جمنای: {' | '.join(errors)}"
 
-    def _call_gemini_rest(self, prompt: str) -> str | None:
-        """Direct HTTP fallback to Google Generative Language API."""
+    def _call_gemini_rest(
+        self, system_instruction: str, user_input: str
+    ) -> tuple[str | None, str | None]:
+        clean_key = self.api_key
+        # ۱. روش اول: Interactions API با ارسال کلید در هدر و پارامتر کوئری
         try:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.api_key}"
-            payload = {
-                "contents": [
-                    {
-                        "parts": [
-                            {"text": prompt}
-                        ]
-                    }
-                ],
-                "generationConfig": {
-                    "temperature": 0.4,
-                    "maxOutputTokens": 1500,
-                },
+            url = f"https://generativelanguage.googleapis.com/v1beta/interactions?key={clean_key}"
+            headers = {
+                "x-goog-api-key": clean_key,
+                "Content-Type": "application/json",
+                "Api-Revision": "2026-05-20",
             }
-            with httpx.Client(timeout=20.0) as client:
-                res = client.post(url, json=payload)
+            body = {
+                "model": self.model,
+                "system_instruction": system_instruction,
+                "input": user_input,
+                "generation_config": {"temperature": 0.4},
+            }
+            with httpx.Client(timeout=25.0) as client:
+                res = client.post(url, headers=headers, json=body)
                 if res.status_code == 200:
                     data = res.json()
-                    candidates = data.get("candidates", [])
+                    output_text = data.get("output_text")
+                    if not output_text and "steps" in data:
+                        for step in reversed(data["steps"]):
+                            for content in step.get("content", []):
+                                if content.get("type") == "text":
+                                    output_text = content.get("text")
+                                    break
+                            if output_text:
+                                break
+                    if output_text:
+                        return output_text.strip(), None
+
+                # اگر خطای ۴۰۱ یا ۴۰۴ داد، متد generateContent سنتی را تست می‌کنیم
+                legacy_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={clean_key}"
+                legacy_body = {
+                    "systemInstruction": {"parts": [{"text": system_instruction}]},
+                    "contents": [{"parts": [{"text": user_input}]}],
+                    "generationConfig": {"temperature": 0.4},
+                }
+                legacy_res = client.post(legacy_url, headers=headers, json=legacy_body)
+                if legacy_res.status_code == 200:
+                    leg_data = legacy_res.json()
+                    candidates = leg_data.get("candidates", [])
                     if candidates:
                         parts = candidates[0].get("content", {}).get("parts", [])
                         if parts:
-                            return parts[0].get("text", "").strip()
-                else:
-                    logger.warning("Gemini REST API error %d: %s", res.status_code, res.text)
-        except Exception as exc:
-            logger.warning("Gemini REST call exception: %s", exc)
-        return None
+                            return parts[0].get("text", "").strip(), None
 
-    @staticmethod
-    def _build_chat_prompt(user_message: str, context: dict[str, Any]) -> str:
-        context_str = json.dumps(context, ensure_ascii=False, indent=2)
-        return (
-            f"{MINING_AI_SYSTEM_PROMPT}\n\n"
-            f"==================================================\n"
-            f"داده‌های بلادرنگ ناوگان و تله‌متری معدن (SmartMine IIoT Live Context):\n"
-            f"==================================================\n"
-            f"{context_str}\n\n"
-            f"==================================================\n"
-            f"پرسش / پیام راننده یا سرپرست معدن:\n"
-            f"==================================================\n"
-            f"{user_message}\n\n"
-            f"پاسخ تحلیلی، دقیق و عملیاتی به زبان فارسی:"
-        )
+                return None, f"کد خطای HTTP {res.status_code}: {res.text}"
+        except httpx.ConnectTimeout:
+            return None, "خطای ConnectTimeout: مهلت اتصال تمام شد (بررسی پروکسی/VPN)."
+        except httpx.ConnectError as ce:
+            return None, f"خطای اتصال به سرور: {ce}"
+        except Exception as exc:
+            return None, f"{type(exc).__name__}: {str(exc)}"
 
 
 # ==============================================================================
-# OpenAI / Generic LLM Provider (OpenAI, Groq, DeepSeek, OpenRouter, Ollama)
+# OpenAI / Generic LLM Provider
 # ==============================================================================
 
 class OpenAIGenAIService(AIService):
-    """
-    OpenAI-compatible AI service (supports OpenAI GPT-4o, Groq, OpenRouter, DeepSeek, Ollama).
-    """
-
     def __init__(self, db: Session, api_key: str, model: str, base_url: str = "") -> None:
         self.db = db
         self.ctx_builder = _AIContextBuilder(db)
-        self.fallback_expert = DomainExpertAIService(db)
-        self.api_key = api_key.strip()
+        self.api_key = api_key.strip().strip("'\"")
         self.model = model.strip() or "gpt-4o-mini"
         self.base_url = (base_url.strip() or "https://api.openai.com/v1").rstrip("/")
-
-        if not self.api_key and "localhost" not in self.base_url and "127.0.0.1" not in self.base_url:
-            raise ValueError("API key is required for OpenAI-compatible provider")
 
     def chat(self, payload: AIChatRequest) -> AIChatResponse:
         context, error_message = self.ctx_builder.build(payload)
@@ -685,12 +658,17 @@ class OpenAIGenAIService(AIService):
                                 sources=[self.model, "openai-compatible", "telemetry"],
                                 context=context,
                             )
-                else:
-                    logger.warning("OpenAI API returned error %d: %s", res.status_code, res.text)
+                return AIChatResponse(
+                    message=f"❌ خطای سرویس OpenAI (کد {res.status_code}): {res.text}",
+                    sources=["openai-error"],
+                    context=context,
+                )
         except Exception as exc:
-            logger.warning("OpenAI API request failed: %s", exc)
-
-        return self.fallback_expert.chat(payload)
+            return AIChatResponse(
+                message=f"❌ خطای ارتباط با OpenAI: {exc}",
+                sources=["openai-error"],
+                context=context,
+            )
 
     def analyze_performance(
         self,
@@ -704,7 +682,7 @@ class OpenAIGenAIService(AIService):
             f"چرخه‌ها: {payload.cycle_count} | تناژ: {payload.payload_ton} تن | میانگین چرخه: {payload.average_cycle_time} دقیقه\n"
             f"زمان انتظار صف: {payload.waiting_time} دقیقه | درجا کار کردن: {payload.idle_time} دقیقه | مصرف سوخت: {payload.fuel_consumption} لیتر\n"
             f"سرعت غیرمجاز: {payload.speeding_events} | ترمز شدید: {payload.harsh_braking_events}\n"
-            f"امتیاز کل: {score.get('overall_score')} (تولید: {score.get('production_score')}, بهره‌وری: {score.get('efficiency_score')}, ایمنی: {score.get('safety_score')}, سوخت: {score.get('fuel_score')})"
+            f"امتیاز کل: {score.get('overall_score')}"
         )
 
         try:
@@ -724,13 +702,10 @@ class OpenAIGenAIService(AIService):
                     data = res.json()
                     choices = data.get("choices", [])
                     if choices:
-                        content = choices[0].get("message", {}).get("content", "").strip()
-                        if content:
-                            return content
+                        return choices[0].get("message", {}).get("content", "").strip()
+                return f"خطای OpenAI: {res.status_code} - {res.text}"
         except Exception as exc:
-            logger.warning("OpenAI performance coaching failed: %s", exc)
-
-        return self.fallback_expert.analyze_performance(driver_code, truck_code, payload, score)
+            return f"خطای استثنایی OpenAI: {exc}"
 
 
 # ==============================================================================
@@ -738,39 +713,31 @@ class OpenAIGenAIService(AIService):
 # ==============================================================================
 
 def get_ai_service(db: Session) -> AIService:
-    """
-    Factory function returning the configured AI service provider
-    (Google Gemini, OpenAI-compatible, or Domain Expert engine).
-    """
     settings = get_settings()
     provider = settings.resolved_ai_provider
     api_key = settings.resolved_ai_api_key
+
+    if provider in {"google", "gemini"}:
+        return GoogleGenAIService(
+            db=db,
+            api_key=api_key or "",
+            model=settings.ai_model,
+        )
+
+    elif provider in {"openai", "custom"}:
+        return OpenAIGenAIService(
+            db=db,
+            api_key=api_key or "",
+            model=settings.ai_model,
+            base_url=settings.ai_base_url,
+        )
 
     if not api_key:
         logger.info("No AI API key provided. Using SmartMine Domain Expert Engine.")
         return DomainExpertAIService(db)
 
-    if provider in {"google", "gemini"}:
-        try:
-            return GoogleGenAIService(
-                db=db,
-                api_key=api_key,
-                model=settings.ai_model,
-            )
-        except Exception as exc:
-            logger.warning("Google Gemini AI provider initialization failed (%s); using Domain Expert: %s", settings.ai_model, exc)
-            return DomainExpertAIService(db)
-
-    elif provider in {"openai", "custom"}:
-        try:
-            return OpenAIGenAIService(
-                db=db,
-                api_key=api_key,
-                model=settings.ai_model,
-                base_url=settings.ai_base_url,
-            )
-        except Exception as exc:
-            logger.warning("OpenAI provider initialization failed (%s); using Domain Expert: %s", settings.ai_model, exc)
-            return DomainExpertAIService(db)
-
-    return DomainExpertAIService(db)
+    return GoogleGenAIService(
+        db=db,
+        api_key=api_key,
+        model=settings.ai_model,
+    )

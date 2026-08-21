@@ -214,6 +214,7 @@ def _seed_performance(db: Session) -> None:
             speeding_events=1,
             harsh_braking_events=2,
             safety_events=0,
+            route_compliance=94.0 + (idx % 4),
             notes="Seeded demo performance",
             overall_score=79 + idx,
             production_score=80 + idx,

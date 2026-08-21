@@ -98,12 +98,6 @@ export const Sidebar = ({ collapsed, onToggleCollapse, closeMobile }: SidebarPro
               <span className="pulse-dot" style={{ width: 6, height: 6 }} /> متصل
             </span>
           </div>
-          <div className="sidebar__footer-item">
-            <span>حالت Demo</span>
-            <span className="mono" style={{ color: 'var(--primary)' }}>
-              {DEMO_MODE ? 'فعال' : 'غیرفعال'}
-            </span>
-          </div>
         </footer>
       )}
     </aside>

@@ -24,14 +24,17 @@ export interface Telemetry {
 }
 
 export interface Mission {
+  missionId?: number
   truckId: string
   fromShovel: string
   toCrusher: string
   distanceKm: number
   etaMin: number
   status: string
+  statusCode?: string
   cycleTimeMin: number
 }
+
 
 export interface FleetVehicle {
   id: string
@@ -75,7 +78,15 @@ export interface DispatchRecommendation {
   estimatedImprovement: number
   reason: string
   label: string
+  scoreBreakdown?: {
+    queue_weight?: number
+    distance_weight?: number
+    travel_time_weight?: number
+    availability_weight?: number
+    health_weight?: number
+  }
 }
+
 
 export interface VehicleComponentHealth {
   name: string
@@ -117,6 +128,15 @@ export interface SimulationConfig {
   durationHours: 1 | 4 | 8
 }
 
+export interface SimulationStep {
+  stepHour: number
+  producedTon: number
+  cycleCount: number
+  queueTime: number
+  fuelLiters: number
+  eventMessage: string
+}
+
 export interface SimulationResult {
   producedTon: number
   avgQueueMin: number
@@ -124,9 +144,12 @@ export interface SimulationResult {
   idleMin: number
   fuelLiters: number
   efficiencyPercent: number
+  steps?: SimulationStep[]
+  eventLogs?: string[]
 }
 
 export interface ComparisonMetric {
+
   label: string
   traditional: number
   smart: number

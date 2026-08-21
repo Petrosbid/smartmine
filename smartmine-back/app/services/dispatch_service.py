@@ -169,13 +169,14 @@ class DispatchService:
 
         self.alert_repo.save(
             Notification(
-                title="New dispatch applied",
-                message=f"{truck.truck_code} assigned to {shovel.shovel_code}",
+                title="تخصیص مأموریت هوشمند جدید",
+                message=f"کامیون {truck.truck_code} با موفقیت به {shovel.shovel_code} تخصیص یافت.",
                 type=AlertType.MISSION,
                 severity=AlertSeverity.INFO,
                 is_read=False,
             )
         )
+
 
         self.db.commit()
 

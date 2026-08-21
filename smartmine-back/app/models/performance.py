@@ -21,6 +21,7 @@ class PerformanceRecord(Base, TimestampMixin):
     speeding_events: Mapped[int] = mapped_column(Integer)
     harsh_braking_events: Mapped[int] = mapped_column(Integer)
     safety_events: Mapped[int] = mapped_column(Integer)
+    route_compliance: Mapped[float] = mapped_column(Float, default=95.0)
     notes: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
     overall_score: Mapped[float] = mapped_column(Float)

@@ -5,22 +5,43 @@ import {
   CheckCircle2,
   Layers,
   MapPin,
+  Play,
   Sparkles,
   WandSparkles,
 } from 'lucide-react'
+
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { PageHeader } from '../components/ui/PageHeader'
+import { ProgressBar } from '../components/ui/ProgressBar'
 import { StatusBadge } from '../components/ui/StatusBadge'
 import { useAppState } from '../context/AppStateContext'
 import { mineMapNodes, shovelQueues as fallbackQueues } from '../data/mockData'
 import { smartmineApi } from '../services/api/smartmineApi'
 import type { DispatchNode, DispatchRecommendation } from '../types/domain'
 
+interface MissionPhaseItem {
+  key: string
+  label: string
+  icon: string
+}
+
+const MISSION_PHASES: MissionPhaseItem[] = [
+  { key: 'assigned', label: 'تخصیص اولیه', icon: '📋' },
+  { key: 'en_route_to_shovel', label: 'حرکت به شاول', icon: '🚛' },
+  { key: 'waiting_for_loading', label: 'صف بارگیری', icon: '⏳' },
+  { key: 'loading', label: 'بارگیری مواد', icon: '⛏️' },
+  { key: 'hauling', label: 'حمل به سنگ‌شکن', icon: '🚚' },
+  { key: 'waiting_for_dump', label: 'صف تخلیه', icon: '⏱️' },
+  { key: 'dumping', label: 'تخلیه سنگ‌شکن', icon: '🏭' },
+  { key: 'completed', label: 'تکمیل چرخه', icon: '✅' },
+]
+
 export const DispatchPage = () => {
   const { mission, setMission, showToast } = useAppState()
   const [loading, setLoading] = useState(false)
   const [applying, setApplying] = useState(false)
+  const [transitioning, setTransitioning] = useState(false)
   const [recommendation, setRecommendation] = useState<DispatchRecommendation | null>(null)
   const [queues, setQueues] = useState<Array<{ shovel: string; trucks: number }>>(fallbackQueues)
   const [selectedNode, setSelectedNode] = useState<DispatchNode | null>(null)
@@ -73,9 +94,50 @@ export const DispatchPage = () => {
     }
   }
 
+  // Dynamic congestion detection from real queues
+  const congestedShovels = queues.filter((q) => q.trucks >= 5)
+
+  // Current Mission Phase indexing
+  const currentStatusCode = mission.statusCode || 'en_route_to_shovel'
+  const currentPhaseIndex = Math.max(
+    0,
+    MISSION_PHASES.findIndex((p) => p.key === currentStatusCode || p.label === mission.status),
+  )
+
+  const advanceMissionPhase = async (): Promise<void> => {
+    const nextIndex = (currentPhaseIndex + 1) % MISSION_PHASES.length
+    const nextPhase = MISSION_PHASES[nextIndex]
+    setTransitioning(true)
+
+    try {
+      if (mission.missionId) {
+        const updated = await smartmineApi.transitionMission(mission.missionId, nextPhase.key)
+        setMission(updated)
+      } else {
+        setMission({
+          ...mission,
+          status: nextPhase.label,
+          statusCode: nextPhase.key,
+        })
+      }
+      showToast(`فاز مأموریت تغییر یافت: ${nextPhase.label}`, 'success')
+    } catch {
+      setMission({
+        ...mission,
+        status: nextPhase.label,
+        statusCode: nextPhase.key,
+      })
+      showToast(`فاز مأموریت تغییر یافت: ${nextPhase.label}`, 'neutral')
+    } finally {
+      setTransitioning(false)
+    }
+
+  }
+
   const getNodeClass = (node: DispatchNode): string => {
     if (node.id === mission.truckId) return 'map-node map-node--active-truck'
-    if (node.id === 'Shovel 02') return 'map-node map-node--shovel map-node--congested'
+    const isCongested = queues.some((q) => q.shovel === node.id && q.trucks >= 5)
+    if (isCongested) return 'map-node map-node--shovel map-node--congested'
     return `map-node map-node--${node.type}`
   }
 
@@ -87,10 +149,49 @@ export const DispatchPage = () => {
         label="سامانه دیسپچ IIoT"
       />
 
-      {/* Tactical Interactive Mine Map */}
+      {/* Dynamic Pit Congestion Alert Banner */}
+      {congestedShovels.length > 0 && (
+        <div
+          style={{
+            padding: '14px 18px',
+            borderRadius: 'var(--radius)',
+            background: 'var(--warning-bg)',
+            border: '1px solid var(--warning-border)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: 12,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <AlertTriangle size={22} className="warning-text" />
+            <div>
+              <strong style={{ color: 'var(--text-primary)', fontSize: 14 }}>
+                هشدار ازدحام در جبهه بارگیری معدن:
+              </strong>
+              <p style={{ margin: '2px 0 0', fontSize: 13, color: 'var(--text-secondary)' }}>
+                {congestedShovels.map((s) => `${s.shovel} (${s.trucks} کامیون در صف)`).join(' و ')}{' '}
+                دارای ترافیک سنگین و معطلی بالای ۱۵ دقیقه هستند.
+              </p>
+            </div>
+          </div>
+          <Button
+            size="sm"
+            variant="ghost"
+            icon={<WandSparkles size={14} />}
+            loading={loading}
+            onClick={() => void getRecommendation()}
+          >
+            پیشنهاد مسیر جایگزین
+          </Button>
+        </div>
+      )}
+
+      {/* Interactive Tactical Mine Map */}
       <Card
-        title="نقشه تاکتیکی پیت معدن و موقعیت ناوگان"
-        subtitle="موقعیت لحظه‌ای شاول‌ها، سنگ‌شکن‌ها، دپوها و کامیون‌های فعال"
+        title="نقشه تاکتیکی پیت معدن و موقعیت لحظه‌ای ناوگان"
+        subtitle="موقعیت جغرافیایی شاول‌ها، سنگ‌شکن‌ها، دپوها و کامیون‌های فعال با به‌روزرسانی IIoT"
         actions={
           <Button
             size="sm"
@@ -108,7 +209,6 @@ export const DispatchPage = () => {
 
             {/* SVG Tactical Route Lines */}
             <svg viewBox="0 0 100 100" className="map-lines" aria-hidden="true">
-              {/* Mine Haul Road Network */}
               <path d="M 15,25 Q 25,20 35,15" fill="none" />
               <path d="M 35,15 Q 55,30 75,45" fill="none" />
               <path d="M 30,45 L 75,45" fill="none" />
@@ -118,20 +218,8 @@ export const DispatchPage = () => {
               <path d="M 75,45 Q 82,60 88,70" fill="none" />
 
               {/* Active Animated Route */}
-              <line
-                x1="55"
-                y1="48"
-                x2="30"
-                y2="45"
-                className="active-route"
-              />
-              <line
-                x1="30"
-                y1="45"
-                x2="75"
-                y2="45"
-                className="active-route"
-              />
+              <line x1="55" y1="48" x2="30" y2="45" className="active-route" />
+              <line x1="30" y1="45" x2="75" y2="45" className="active-route" />
             </svg>
 
             {/* Interactive Nodes */}
@@ -156,7 +244,7 @@ export const DispatchPage = () => {
                     <span
                       className="map-node-badge"
                       style={{
-                        backgroundColor: queueCount > 5 ? 'var(--danger)' : 'rgba(255,255,255,0.2)',
+                        backgroundColor: queueCount >= 5 ? 'var(--danger)' : 'rgba(255,255,255,0.2)',
                       }}
                     >
                       {queueCount} صف
@@ -193,12 +281,141 @@ export const DispatchPage = () => {
         </div>
       </Card>
 
+      {/* Selected Node Details Card (if selected) */}
+      {selectedNode && (
+        <Card
+          title={`جزئیات نود جغرافیایی: ${selectedNode.id}`}
+          subtitle={`نوع تجهیز: ${selectedNode.type === 'shovel' ? 'شاول بارگیری سنگ' : selectedNode.type === 'crusher' ? 'سنگ‌شکن فکی' : 'دپوی مواد معدنی'}`}
+          actions={
+            <Button size="sm" variant="ghost" onClick={() => setSelectedNode(null)}>
+              بستن
+            </Button>
+          }
+        >
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' }}>
+            <div style={{ background: 'var(--surface)', padding: '10px 16px', borderRadius: 'var(--radius-sm)' }}>
+              <span className="muted" style={{ fontSize: 12 }}>مختصات نقشه:</span>
+              <div className="mono" style={{ fontWeight: 700, marginTop: 2 }}>
+                X: {selectedNode.x}% | Y: {selectedNode.y}%
+              </div>
+            </div>
+            {queues.find((q) => q.shovel === selectedNode.id) && (
+              <div style={{ background: 'var(--surface)', padding: '10px 16px', borderRadius: 'var(--radius-sm)' }}>
+                <span className="muted" style={{ fontSize: 12 }}>تعداد کامیون در صف:</span>
+                <div className="mono" style={{ fontWeight: 700, marginTop: 2, color: 'var(--primary)' }}>
+                  {queues.find((q) => q.shovel === selectedNode.id)?.trucks} دستگاه
+                </div>
+              </div>
+            )}
+            <div style={{ background: 'var(--surface)', padding: '10px 16px', borderRadius: 'var(--radius-sm)' }}>
+              <span className="muted" style={{ fontSize: 12 }}>وضعیت اتصال IIoT:</span>
+              <div className="success-text" style={{ fontWeight: 700, marginTop: 2 }}>
+                ● آنلاین و متصل
+              </div>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {/* Mission Lifecycle State Machine & Timeline */}
+      <Card
+        title="فازهای چرخه عملیات باربری (Mission State Machine)"
+        subtitle="پایش گام‌به‌گام چرخه ترابری از تخصیص اولیه تا تخلیه نهایی در سنگ‌شکن"
+        actions={
+          <Button
+            size="sm"
+            variant="ghost"
+            icon={<Play size={14} />}
+            loading={transitioning}
+            onClick={() => void advanceMissionPhase()}
+          >
+            گام بعدی عملیات
+          </Button>
+        }
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))',
+              gap: 8,
+            }}
+          >
+            {MISSION_PHASES.map((phase, idx) => {
+              const isPast = idx < currentPhaseIndex
+              const isCurrent = idx === currentPhaseIndex
+
+              return (
+                <div
+                  key={phase.key}
+                  style={{
+                    padding: '10px 8px',
+                    borderRadius: 'var(--radius-sm)',
+                    textAlign: 'center',
+                    background: isCurrent
+                      ? 'var(--primary-bg)'
+                      : isPast
+                        ? 'rgba(34, 197, 94, 0.1)'
+                        : 'var(--surface)',
+                    border: isCurrent
+                      ? '2px solid var(--primary)'
+                      : isPast
+                        ? '1px solid rgba(34, 197, 94, 0.4)'
+                        : '1px solid var(--border)',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <div style={{ fontSize: 18, marginBottom: 4 }}>
+                    {isPast ? '✅' : phase.icon}
+                  </div>
+                  <strong
+                    style={{
+                      fontSize: 12,
+                      display: 'block',
+                      color: isCurrent
+                        ? 'var(--primary)'
+                        : isPast
+                          ? 'var(--success)'
+                          : 'var(--text-secondary)',
+                    }}
+                  >
+                    {phase.label}
+                  </strong>
+                  <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>
+                    گام {idx + 1} از ۸
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '8px 14px',
+              background: 'var(--surface)',
+              borderRadius: 'var(--radius-sm)',
+              fontSize: 13,
+            }}
+          >
+            <span className="muted">
+              وضعیت فعال: <strong style={{ color: 'var(--primary)' }}>{mission.status}</strong>
+            </span>
+            <span className="muted">
+              پیشرفت چرخه: <strong className="mono">{Math.round(((currentPhaseIndex + 1) / 8) * 100)}٪</strong>
+            </span>
+          </div>
+        </div>
+      </Card>
+
       {/* Shovel Queues & Current Mission Status */}
       <div className="two-col-grid">
         <Card title="وضعیت ترافیک و صف شاول‌ها" subtitle="تعداد کامیون‌های منتظر بارگیری در هر نقطه">
           <ul className="fleet-list">
             {queues.map((item) => {
-              const isCongested = item.trucks >= 6
+              const isCongested = item.trucks >= 5
               const isAssigned = mission.fromShovel === item.shovel
 
               return (
@@ -276,46 +493,35 @@ export const DispatchPage = () => {
               </div>
               <div style={{ background: 'var(--surface)', padding: 10, borderRadius: 'var(--radius-sm)', textAlign: 'center' }}>
                 <span className="muted" style={{ fontSize: 11 }}>زمان تا مقصد:</span>
-                <div className="mono" style={{ fontWeight: 700, marginTop: 2, color: 'var(--primary)' }}>{mission.etaMin} دقیقه</div>
+                <div className="mono" style={{ fontWeight: 700, marginTop: 2, color: 'var(--primary)' }}>
+                  {mission.etaMin} دقیقه
+                </div>
               </div>
               <div style={{ background: 'var(--surface)', padding: 10, borderRadius: 'var(--radius-sm)', textAlign: 'center' }}>
                 <span className="muted" style={{ fontSize: 11 }}>زمان کل چرخه:</span>
-                <div className="mono" style={{ fontWeight: 700, marginTop: 2 }}>{mission.cycleTimeMin} دقیقه</div>
+                <div className="mono" style={{ fontWeight: 700, marginTop: 2 }}>
+                  {mission.cycleTimeMin} دقیقه
+                </div>
               </div>
               <div style={{ background: 'var(--surface)', padding: 10, borderRadius: 'var(--radius-sm)', textAlign: 'center' }}>
                 <span className="muted" style={{ fontSize: 11 }}>پایش سرعت:</span>
-                <div className="mono success-text" style={{ fontWeight: 700, marginTop: 2 }}>استاندارد</div>
+                <div className="mono success-text" style={{ fontWeight: 700, marginTop: 2 }}>
+                  استاندارد
+                </div>
               </div>
             </div>
           </div>
         </Card>
       </div>
 
-      {/* AI Recommendation Result Box */}
+      {/* AI Recommendation Result Box & Multi-Criteria Score Breakdown */}
       {recommendation && (
         <Card
           title="پیشنهاد بهینه‌سازی مسیر دیسپچ هوشمند"
           subtitle={recommendation.label}
           actions={<Sparkles size={20} style={{ color: 'var(--primary)' }} />}
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            <div
-              style={{
-                padding: '12px 16px',
-                borderRadius: 'var(--radius)',
-                background: 'var(--warning-bg)',
-                border: '1px solid var(--warning-border)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-              }}
-            >
-              <AlertTriangle size={20} className="warning-text" />
-              <span style={{ fontWeight: 600, fontSize: 13 }}>
-                هشدار ازدحام: در Shovel 02 تعداد ۸ کامیون در صف انتظار هستند (زمان انتظار تقریبی: ۱۸ دقیقه).
-              </span>
-            </div>
-
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div className="three-col">
               <div style={{ background: 'var(--surface)', padding: 14, borderRadius: 'var(--radius)' }}>
                 <span className="muted" style={{ fontSize: 12 }}>مسیر بهینه پیشنهادی:</span>
@@ -335,16 +541,69 @@ export const DispatchPage = () => {
               </div>
 
               <div style={{ background: 'var(--surface)', padding: 14, borderRadius: 'var(--radius)' }}>
-                <span className="muted" style={{ fontSize: 12 }}>بهبود و صرفه‌جویی زمان:</span>
+                <span className="muted" style={{ fontSize: 12 }}>صرفه‌جویی زمان چرخه:</span>
                 <p className="success-text mono" style={{ fontWeight: 800, fontSize: '1.1rem', marginTop: 4 }}>
                   +{recommendation.estimatedImprovement}٪ سریع‌تر
                 </p>
               </div>
             </div>
 
-            <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-              <strong>دلیل الگوریتم هوشمند:</strong> {recommendation.reason}
+            <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>
+              <strong>تحلیل الگوریتم بهینه‌سازی:</strong> {recommendation.reason}
             </p>
+
+            {/* Algorithm Score Breakdown Visualizer */}
+            {recommendation.scoreBreakdown && (
+              <div
+                style={{
+                  background: 'var(--surface)',
+                  padding: 14,
+                  borderRadius: 'var(--radius)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 8,
+                }}
+              >
+                <strong style={{ fontSize: 13 }}>تفکیک امتیاز ۵ عاملی الگوریتم دیسپچ:</strong>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10 }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 2 }}>
+                      <span className="muted">مؤلفه طول صف (۳۰٪):</span>
+                      <span className="mono">{recommendation.scoreBreakdown.queue_weight ?? 85}%</span>
+                    </div>
+                    <ProgressBar value={recommendation.scoreBreakdown.queue_weight ?? 85} tone="primary" />
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 2 }}>
+                      <span className="muted">مؤلفه فاصله مکانی (۲۰٪):</span>
+                      <span className="mono">{recommendation.scoreBreakdown.distance_weight ?? 90}%</span>
+                    </div>
+                    <ProgressBar value={recommendation.scoreBreakdown.distance_weight ?? 90} tone="success" />
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 2 }}>
+                      <span className="muted">مؤلفه زمان سفر (۲۰٪):</span>
+                      <span className="mono">{recommendation.scoreBreakdown.travel_time_weight ?? 88}%</span>
+                    </div>
+                    <ProgressBar value={recommendation.scoreBreakdown.travel_time_weight ?? 88} tone="success" />
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 2 }}>
+                      <span className="muted">وضعیت شاول (۱۵٪):</span>
+                      <span className="mono">{recommendation.scoreBreakdown.availability_weight ?? 100}%</span>
+                    </div>
+                    <ProgressBar value={recommendation.scoreBreakdown.availability_weight ?? 100} tone="primary" />
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 2 }}>
+                      <span className="muted">سلامت فنی خودرو (۱۵٪):</span>
+                      <span className="mono">{recommendation.scoreBreakdown.health_weight ?? 84}%</span>
+                    </div>
+                    <ProgressBar value={recommendation.scoreBreakdown.health_weight ?? 84} tone="primary" />
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="actions-row">
               <Button
@@ -362,3 +621,4 @@ export const DispatchPage = () => {
     </div>
   )
 }
+

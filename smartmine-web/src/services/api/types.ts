@@ -178,7 +178,17 @@ export interface SimulationRunResponseDto {
   efficiency: number
   truck_utilization: number
   note: string
+  steps?: Array<{
+    step_hour: number
+    produced_ton: number
+    cycle_count: number
+    queue_time: number
+    fuel_liters: number
+    event_message: string
+  }>
+  event_logs?: string[]
 }
+
 
 export interface ComparisonResponseDto {
   traditional: Record<string, number>

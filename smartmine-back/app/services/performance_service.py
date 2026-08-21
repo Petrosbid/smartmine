@@ -53,6 +53,7 @@ class PerformanceService:
             speeding_events=payload.speeding_events,
             harsh_braking_events=payload.harsh_braking_events,
             safety_events=payload.safety_events,
+            route_compliance=payload.route_compliance,
             notes=payload.notes,
             overall_score=float(score["overall_score"]),
             production_score=float(score["production_score"]),

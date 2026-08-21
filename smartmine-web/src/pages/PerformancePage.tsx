@@ -24,7 +24,7 @@ const defaultForm: PerformanceInput = {
   averageCycleTime: 31,
   waitTime: 12,
   idleTime: 18,
-  fuelConsumption: 33,
+  fuelConsumption: 335,
   overspeedEvents: 1,
   hardBrakeEvents: 1,
   safetyEvents: 0,
@@ -38,7 +38,7 @@ const excellentPreset: PerformanceInput = {
   averageCycleTime: 27,
   waitTime: 6,
   idleTime: 10,
-  fuelConsumption: 29,
+  fuelConsumption: 290,
   overspeedEvents: 0,
   hardBrakeEvents: 0,
   safetyEvents: 0,
@@ -52,13 +52,14 @@ const congestedPreset: PerformanceInput = {
   averageCycleTime: 38,
   waitTime: 22,
   idleTime: 28,
-  fuelConsumption: 37,
+  fuelConsumption: 385,
   overspeedEvents: 2,
   hardBrakeEvents: 2,
   safetyEvents: 1,
   routeCompliance: 86,
   notes: 'ترافیک شدید در شاول شماره ۲ باعث افزایش زمان صف و مصرف سوخت شد.',
 }
+
 
 export const PerformancePage = () => {
   const navigate = useNavigate()
@@ -229,16 +230,16 @@ export const PerformancePage = () => {
           </label>
 
           <label>
-            مصرف سوخت گازوئیل
+            مجموع مصرف سوخت شیفت
             <div className="input-with-unit">
               <input
                 type="number"
                 min={10}
-                max={100}
+                max={900}
                 value={form.fuelConsumption}
                 onChange={(e) => updateField('fuelConsumption', Number(e.target.value))}
               />
-              <span className="input-unit">L/h</span>
+              <span className="input-unit">لیتر</span>
             </div>
           </label>
         </div>
