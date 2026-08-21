@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.schemas.dispatch import MissionResponse
+from app.schemas.dispatch import MissionTransitionRequest
+from app.services.dispatch_service import DispatchService
 from app.services.mission_service import MissionService
 
 router = APIRouter(prefix="/missions", tags=["Dispatch"])
@@ -23,3 +25,12 @@ def current_mission(
 @router.get("", response_model=list[MissionResponse], summary="List missions")
 def list_missions(db: Session = Depends(get_db)) -> list[MissionResponse]:
     return MissionService(db).list_all()
+
+
+@router.post("/{mission_id}/transition", response_model=MissionResponse, summary="Transition mission state")
+def transition_mission(
+    mission_id: int,
+    payload: MissionTransitionRequest,
+    db: Session = Depends(get_db),
+) -> MissionResponse:
+    return DispatchService(db).transition(mission_id, payload.status)

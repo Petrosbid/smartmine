@@ -14,7 +14,7 @@ router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
     summary="Get aggregated dashboard data",
 )
 def get_dashboard(
-    driver_id: str = Query(default="D-102"),
+    driver_id: str = Query(...),
     db: Session = Depends(get_db),
 ) -> DashboardResponse:
     return DashboardService(db).get_dashboard(driver_id=driver_id)

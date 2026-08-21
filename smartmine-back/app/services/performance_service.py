@@ -11,6 +11,7 @@ from app.schemas.performance import (
     PerformanceAnalyzeResponse,
     PerformanceHistoryItem,
 )
+from app.services.ai_service import get_ai_service
 from app.services.serializers import to_performance_history_schema
 
 
@@ -32,7 +33,12 @@ class PerformanceService:
 
         score = calculate_performance_score(payload)
 
-        ai_analysis = self._build_analysis_text(score["overall_score"], score["improvement_factors"])
+        ai_analysis = get_ai_service(self.db).analyze_performance(
+            driver_code=driver.driver_code,
+            truck_code=truck.truck_code,
+            payload=payload,
+            score=score,
+        )
 
         record = PerformanceRecord(
             driver_id=driver.id,

@@ -9,5 +9,5 @@ router = APIRouter(prefix="/profile", tags=["Profile"])
 
 
 @router.get("", response_model=DriverProfileResponse, summary="Get active driver profile")
-def get_profile(driver_id: str = Query(default="D-102"), db: Session = Depends(get_db)) -> DriverProfileResponse:
+def get_profile(driver_id: str = Query(...), db: Session = Depends(get_db)) -> DriverProfileResponse:
     return ProfileService(db).get_driver_profile(driver_id)

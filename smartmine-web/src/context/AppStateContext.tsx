@@ -16,6 +16,7 @@ import {
   initialMission,
   initialNotifications,
   initialTelemetry,
+  performanceTrend,
   vehicleHealthData,
 } from '../data/mockData'
 import { mapDashboardKpi, mapFleet } from '../services/api/mappers'
@@ -64,6 +65,8 @@ interface AppStateContextValue {
   vehicleHealth: VehicleHealth
   setVehicleHealth: (health: VehicleHealth) => void
   fleetStatus: FleetVehicle[]
+  recentPerformance: Array<{ createdAt: string; overallScore: number; cycleCount: number; payloadTon: number }>
+  aiRecommendation: string
   notifications: NotificationItem[]
   setNotifications: Dispatch<SetStateAction<NotificationItem[]>>
   aiMessages: AIMessage[]
@@ -76,6 +79,13 @@ interface AppStateContextValue {
 }
 
 const STORAGE_KEY = 'smartmine-auth-v1'
+
+const initialRecentPerformance = performanceTrend.map((item, idx) => ({
+  createdAt: `روز ${idx + 1}`,
+  overallScore: item.score,
+  cycleCount: item.cycle,
+  payloadTon: item.ton,
+}))
 
 const AppStateContext = createContext<AppStateContextValue | null>(null)
 
@@ -121,6 +131,12 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
   const [performanceResult, setPerformanceResult] = useState<PerformanceScoreResult | null>(null)
   const [vehicleHealth, setVehicleHealth] = useState<VehicleHealth>(vehicleHealthData)
   const [fleetStatus, setFleetStatus] = useState<FleetVehicle[]>(initialFleetStatus)
+  const [recentPerformance, setRecentPerformance] = useState<
+    Array<{ createdAt: string; overallScore: number; cycleCount: number; payloadTon: number }>
+  >(initialRecentPerformance)
+  const [aiRecommendation, setAiRecommendation] = useState(
+    'با توجه به بار سنگین شاول 02، هدایت به سمت شاول 03 زمان انتظار را تا 24٪ کاهش می‌دهد.',
+  )
   const [notifications, setNotifications] = useState<NotificationItem[]>(initialNotifications)
   const [aiMessages, setAiMessages] = useState<AIMessage[]>([])
   const [presentationMode, setPresentationMode] = useState(false)
@@ -206,12 +222,26 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
           setMission(smartmineApi.mapMission(dashboard.current_mission))
         }
 
-        setDashboardKpi(mapDashboardKpi(dashboard.performance.overall_score, dashboard.current_mission ? smartmineApi.mapMission(dashboard.current_mission) : null))
+        setDashboardKpi(
+          mapDashboardKpi(
+            dashboard.performance.overall_score,
+            dashboard.current_mission ? smartmineApi.mapMission(dashboard.current_mission) : null,
+          ),
+        )
         setFleetStatus(mapFleet(dashboard.fleet))
+        setRecentPerformance(
+          dashboard.recent_performance.map((item) => ({
+            createdAt: item.created_at,
+            overallScore: item.overall_score,
+            cycleCount: item.cycle_count,
+            payloadTon: item.payload_ton,
+          })),
+        )
+        setAiRecommendation(dashboard.ai_recommendation.message)
         setVehicleHealth(health)
         setNotifications(notificationsResponse)
       } catch {
-        // Keep UI functional with existing state if backend load fails.
+        // Fallback already pre-populated
       }
     }
 
@@ -234,6 +264,8 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
       vehicleHealth,
       setVehicleHealth,
       fleetStatus,
+      recentPerformance,
+      aiRecommendation,
       notifications,
       setNotifications,
       aiMessages,
@@ -249,6 +281,8 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
       clearToast,
       dashboardKpi,
       fleetStatus,
+      recentPerformance,
+      aiRecommendation,
       login,
       logout,
       mission,
@@ -277,5 +311,3 @@ export const useAppState = (): AppStateContextValue => {
 
   return context
 }
-
-

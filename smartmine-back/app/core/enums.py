@@ -34,10 +34,16 @@ class AlertType(StrEnum):
 
 
 class MissionStatus(StrEnum):
-    READY = "ready"
-    IN_PROGRESS = "in_progress"
-    WAITING = "waiting"
+    ASSIGNED = "assigned"
+    EN_ROUTE_TO_SHOVEL = "en_route_to_shovel"
+    WAITING_FOR_LOADING = "waiting_for_loading"
+    LOADING = "loading"
+    HAULING = "hauling"
+    WAITING_FOR_DUMP = "waiting_for_dump"
+    DUMPING = "dumping"
     COMPLETED = "completed"
+    CANCELLED = "cancelled"
+    FAILED = "failed"
 
 
 class RiskLevel(StrEnum):

@@ -34,10 +34,16 @@ export const toApiShift = (shift: Driver['shift']): DriverDto['shift'] => {
 }
 
 const missionStatusMap: Record<string, Mission['status']> = {
-  in_progress: 'در حال حرکت',
-  waiting: 'منتظر',
-  ready: 'آماده',
-  completed: 'آماده',
+  assigned: 'تخصیص داده شده',
+  en_route_to_shovel: 'در مسیر شاول',
+  waiting_for_loading: 'در انتظار بارگیری',
+  loading: 'بارگیری',
+  hauling: 'حمل بار',
+  waiting_for_dump: 'در انتظار تخلیه',
+  dumping: 'تخلیه',
+  completed: 'تکمیل شده',
+  cancelled: 'لغو شده',
+  failed: 'ناموفق',
 }
 
 const formatRelativeTime = (iso: string): string => {

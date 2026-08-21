@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+
+<html class="dark" dir="rtl" lang="fa"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>شبیه‌سازی عملیات معدن (Industrial PoC)</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&amp;family=Vazirmatn:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#d3c4b1",
+                        "secondary-fixed-dim": "#61dd9c",
+                        "surface-dim": "#0e141a",
+                        "on-primary-fixed": "#271900",
+                        "surface-container-highest": "#2f353c",
+                        "surface-container-lowest": "#090f15",
+                        "on-secondary-fixed-variant": "#005231",
+                        "tertiary-container": "#ff8c88",
+                        "on-secondary": "#003921",
+                        "on-error": "#690005",
+                        "tertiary": "#ffb6b2",
+                        "surface-tint": "#f5bd58",
+                        "secondary-fixed": "#7ffab7",
+                        "primary": "#f7bf59",
+                        "on-tertiary-fixed": "#410005",
+                        "on-primary-container": "#573c00",
+                        "inverse-on-surface": "#2b3138",
+                        "background": "#0e141a",
+                        "surface": "#0e141a",
+                        "surface-container": "#1a2027",
+                        "on-tertiary": "#68000e",
+                        "on-secondary-fixed": "#002111",
+                        "secondary-container": "#17a56a",
+                        "on-primary": "#422c00",
+                        "outline": "#9c8f7d",
+                        "on-secondary-container": "#00311c",
+                        "error": "#ffb4ab",
+                        "surface-container-high": "#252b31",
+                        "surface-container-low": "#161c22",
+                        "error-container": "#93000a",
+                        "surface-bright": "#343a41",
+                        "surface-variant": "#2f353c",
+                        "on-primary-fixed-variant": "#5f4100",
+                        "on-surface": "#dde3ec",
+                        "on-tertiary-fixed-variant": "#8d131d",
+                        "tertiary-fixed-dim": "#ffb3af",
+                        "primary-fixed": "#ffdeaa",
+                        "secondary": "#61dd9c",
+                        "outline-variant": "#4f4536",
+                        "inverse-surface": "#dde3ec",
+                        "primary-container": "#d9a441",
+                        "on-error-container": "#ffdad6",
+                        "on-background": "#dde3ec",
+                        "primary-fixed-dim": "#f5bd58",
+                        "inverse-primary": "#7d5700",
+                        "on-tertiary-container": "#840b18",
+                        "tertiary-fixed": "#ffdad7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "margin-desktop": "32px",
+                        "lg": "24px",
+                        "xs": "4px",
+                        "2xl": "48px",
+                        "xl": "32px",
+                        "unit": "4px",
+                        "margin-mobile": "16px",
+                        "md": "16px",
+                        "sm": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Vazirmatn"],
+                        "telemetry-lg": ["JetBrains Mono"],
+                        "body-lg": ["Vazirmatn"],
+                        "headline-md": ["Vazirmatn"],
+                        "headline-lg": ["Vazirmatn"],
+                        "headline-lg-mobile": ["Vazirmatn"],
+                        "body-sm": ["Vazirmatn"],
+                        "display-lg": ["Vazirmatn"],
+                        "label-mono": ["JetBrains Mono"],
+                        "body-md": ["Vazirmatn"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "telemetry-lg": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "60px", "fontWeight": "700" }],
+                        "label-mono": ["14px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Custom Styles for Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #f7bf59;
+            cursor: pointer;
+            margin-top: -8px;
+            box-shadow: 0 0 10px rgba(247, 191, 89, 0.5);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #4f4536;
+            border-radius: 2px;
+        }
+        
+        /* Grid Animations */
+        @keyframes pulse-node {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+        
+        .node-active {
+            animation: pulse-node 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased overflow-hidden">
+<!-- App Container -->
+<div class="flex h-screen w-full">
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col relative w-full mr-[280px]">
+<!-- TopNavBar -->
+<header class="bg-surface-container text-primary font-label-mono text-body-lg fixed top-0 left-0 right-[280px] h-16 z-40 border-b border-outline-variant shadow-sm flex items-center justify-between px-lg rtl">
+<div class="flex items-center gap-md">
+<span class="font-headline-sm text-headline-sm font-black text-primary">D-102 | T-27</span>
+</div>
+<div class="flex items-center gap-lg">
+<nav class="hidden md:flex gap-md">
+<a class="text-on-surface-variant hover:text-primary transition-all active:opacity-80" href="#">شیفت صبح</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="flex items-center gap-sm">
+<button class="text-on-surface-variant hover:text-primary transition-all p-2 rounded-full hover:bg-surface-container-high">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-all p-2 rounded-full hover:bg-surface-container-high">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings_input_antenna</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-all p-2 rounded-full hover:bg-surface-container-high">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">help</span>
+</button>
+</div>
+<div class="h-8 w-px bg-outline-variant mx-2"></div>
+<button class="bg-primary-container text-on-primary-container px-4 py-2 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity">
+                        وضعیت سیستم
+                    </button>
+<div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden border border-outline-variant ml-2">
+<img alt="پروفایل راننده" class="w-full h-full object-cover" data-alt="A futuristic, high-contrast headshot of an industrial mining operator wearing a sleek, dark augmented reality headset with glowing orange accents. The lighting is moody and cinematic, set against a dark grey metallic background. The overall aesthetic is professional, technical, and modern corporate, utilizing deep blacks and vibrant orange highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-SH3aQ5nFTcdqqmn3C4BdK4BVim7scnhUqwNO5biWQI0cE5MPaYyL33hhEhD8FqL-zX2l29yZBqzJhv8nQrVY_YiyPx5qc1BTNAhBYGpSzVd1RaV4dSdnDKuroBpIlkGqrbFgzF05j3AYzFTrtLhOZtr9UZUetwt2yxQta8j9BNaHvG30gybymoIfaaoR3i9JO85xr-sG8r11hrHKGl0O8Jm3_zUAqPFh38Iq6PaWTwtj0rRRD-7Q"/>
+</div>
+</div>
+</header>
+<!-- Scrollable Canvas -->
+<div class="flex-1 overflow-y-auto pt-16 px-gutter md:px-margin-desktop pb-margin-desktop custom-scrollbar relative z-0">
+<!-- Page Header -->
+<div class="mt-lg mb-xl">
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">شبیه‌سازی عملیات معدن</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Industrial Proof of Concept Environment</p>
+</div>
+<!-- Simulation Layout Grid -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Config Panel (Left Side, 4 cols) -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-gutter">
+<!-- Setup Card -->
+<div class="bg-surface-dim border border-outline-variant rounded-xl p-lg relative overflow-hidden">
+<!-- Glassmorphic highlight -->
+<div class="absolute inset-0 pointer-events-none opacity-20" style="background: radial-gradient(circle at top right, rgba(247, 191, 89, 0.3) 0%, transparent 70%);"></div>
+<h2 class="font-headline-sm text-headline-sm text-primary mb-xl flex items-center gap-sm border-b border-outline-variant pb-2">
+<span class="material-symbols-outlined">tune</span>
+                                پیکربندی ناوگان
+                            </h2>
+<div class="space-y-xl relative z-10">
+<!-- Trucks Config -->
+<div>
+<div class="flex justify-between items-center mb-2">
+<label class="font-label-mono text-label-mono text-on-surface">تعداد کامیون‌ها (Trucks)</label>
+<span class="font-telemetry-lg text-telemetry-lg text-primary" id="truck-val">24</span>
+</div>
+<input class="w-full" id="truck-slider" max="50" min="1" oninput="document.getElementById('truck-val').innerText = this.value" type="range" value="24"/>
+<div class="flex justify-between mt-1 text-xs text-on-surface-variant">
+<span>۱</span>
+<span>۵۰</span>
+</div>
+</div>
+<!-- Shovels Config -->
+<div>
+<div class="flex justify-between items-center mb-2">
+<label class="font-label-mono text-label-mono text-on-surface">تعداد شاول‌ها (Shovels)</label>
+<span class="font-telemetry-lg text-telemetry-lg text-secondary" id="shovel-val">4</span>
+</div>
+<input class="w-full" id="shovel-slider" max="10" min="1" oninput="document.getElementById('shovel-val').innerText = this.value" type="range" value="4"/>
+<div class="flex justify-between mt-1 text-xs text-on-surface-variant">
+<span>۱</span>
+<span>۱۰</span>
+</div>
+</div>
+<!-- Duration Config -->
+<div>
+<label class="font-label-mono text-label-mono text-on-surface block mb-2">مدت زمان شبیه‌سازی</label>
+<div class="grid grid-cols-4 gap-2">
+<button class="bg-surface-variant border border-outline-variant text-on-surface rounded-lg py-2 hover:border-primary hover:text-primary transition-colors text-sm font-bold">1h</button>
+<button class="bg-primary text-on-primary border border-primary rounded-lg py-2 transition-colors text-sm font-bold shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)]">2h</button>
+<button class="bg-surface-variant border border-outline-variant text-on-surface rounded-lg py-2 hover:border-primary hover:text-primary transition-colors text-sm font-bold">4h</button>
+<button class="bg-surface-variant border border-outline-variant text-on-surface rounded-lg py-2 hover:border-primary hover:text-primary transition-colors text-sm font-bold">8h</button>
+</div>
+</div>
+<!-- Action -->
+<div class="pt-4 mt-4 border-t border-outline-variant">
+<button class="w-full bg-primary text-on-primary font-headline-sm text-headline-sm py-3 rounded-lg shadow-[inset_0_1px_1px_rgba(255,255,255,0.5)] hover:bg-primary-fixed-dim transition-all active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                                        اجرای شبیه‌سازی
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Active Canvas (Right Side, 8 cols) -->
+<div class="col-span-12 lg:col-span-8 flex flex-col gap-gutter">
+<!-- Stats Row -->
+<div class="grid grid-cols-3 gap-gutter">
+<!-- Stat 1 -->
+<div class="bg-surface border border-outline-variant rounded-xl p-md flex flex-col relative overflow-hidden group">
+<div class="absolute right-0 top-0 bottom-0 w-1 bg-primary group-hover:w-2 transition-all"></div>
+<span class="font-label-mono text-label-mono text-on-surface-variant mb-1">تناژ کل (تخمین)</span>
+<div class="flex items-end gap-2">
+<span class="font-telemetry-lg text-headline-lg text-on-surface">12,450</span>
+<span class="text-sm text-primary mb-1 pb-1">Ton</span>
+</div>
+<div class="mt-2 w-full bg-surface-variant h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[65%]"></div>
+</div>
+</div>
+<!-- Stat 2 -->
+<div class="bg-surface border border-outline-variant rounded-xl p-md flex flex-col relative overflow-hidden group">
+<div class="absolute right-0 top-0 bottom-0 w-1 bg-secondary group-hover:w-2 transition-all"></div>
+<span class="font-label-mono text-label-mono text-on-surface-variant mb-1">میانگین زمان انتظار</span>
+<div class="flex items-end gap-2">
+<span class="font-telemetry-lg text-headline-lg text-on-surface">4.2</span>
+<span class="text-sm text-secondary mb-1 pb-1">Min</span>
+</div>
+<div class="mt-2 w-full bg-surface-variant h-1 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[30%]"></div>
+</div>
+</div>
+<!-- Stat 3 -->
+<div class="bg-surface border border-outline-variant rounded-xl p-md flex flex-col relative overflow-hidden group">
+<div class="absolute right-0 top-0 bottom-0 w-1 bg-tertiary-container group-hover:w-2 transition-all"></div>
+<span class="font-label-mono text-label-mono text-on-surface-variant mb-1">بهره‌وری ناوگان</span>
+<div class="flex items-end gap-2">
+<span class="font-telemetry-lg text-headline-lg text-on-surface">87</span>
+<span class="text-sm text-tertiary-container mb-1 pb-1">%</span>
+</div>
+<div class="mt-2 w-full bg-surface-variant h-1 rounded-full overflow-hidden">
+<div class="bg-tertiary-container h-full w-[87%]"></div>
+</div>
+</div>
+</div>
+<!-- Main Visualization Canvas -->
+<div class="bg-[#0B1117] border border-outline-variant rounded-xl p-md flex-1 min-h-[400px] relative overflow-hidden">
+<!-- Background Grid Pattern -->
+<div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#d3c4b1 1px, transparent 1px); background-size: 24px 24px;"></div>
+<!-- Top Right Controls (Glassmorphic) -->
+<div class="absolute top-4 left-4 z-20 flex gap-2">
+<div class="bg-[#16222D]/80 backdrop-blur-[12px] border border-outline-variant rounded-lg p-1 flex items-center shadow-lg">
+<button class="p-1 rounded text-on-surface-variant hover:text-primary hover:bg-surface-variant"><span class="material-symbols-outlined text-sm">zoom_in</span></button>
+<button class="p-1 rounded text-on-surface-variant hover:text-primary hover:bg-surface-variant"><span class="material-symbols-outlined text-sm">zoom_out</span></button>
+<div class="w-px h-4 bg-outline-variant mx-1"></div>
+<button class="p-1 rounded text-on-surface-variant hover:text-primary hover:bg-surface-variant"><span class="material-symbols-outlined text-sm">filter_list</span></button>
+</div>
+</div>
+<!-- Visualization Area -->
+<div class="relative w-full h-full z-10 flex items-center justify-center">
+<!-- Simulated Grid Nodes -->
+<div class="relative w-[80%] h-[80%] border border-outline-variant/30 rounded-full flex items-center justify-center">
+<div class="absolute w-[60%] h-[60%] border border-outline-variant/50 rounded-full border-dashed animate-[spin_60s_linear_infinite]"></div>
+<div class="absolute w-[40%] h-[40%] border border-primary/20 rounded-full flex items-center justify-center">
+<!-- Central Node (Crusher/Dump) -->
+<div class="w-12 h-12 bg-primary/20 border border-primary rounded-lg flex items-center justify-center node-active z-10 shadow-[0_0_15px_rgba(247,191,89,0.3)]">
+<span class="material-symbols-outlined text-primary">factory</span>
+</div>
+</div>
+<!-- Nodes on outer orbit -->
+<div class="absolute top-0 right-1/4 w-8 h-8 bg-secondary/20 border border-secondary rounded-full flex items-center justify-center node-active" style="animation-delay: 0.5s;">
+<span class="material-symbols-outlined text-secondary text-xs">local_shipping</span>
+</div>
+<div class="absolute bottom-1/4 left-10 w-8 h-8 bg-surface-variant border border-outline-variant rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-xs">local_shipping</span>
+</div>
+<div class="absolute top-1/2 left-0 w-10 h-10 bg-tertiary-container/20 border border-tertiary-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary-container text-sm">precision_manufacturing</span>
+</div>
+</div>
+<!-- Overlay Tooltip Example -->
+<div class="absolute top-1/4 right-1/4 bg-[#16222D]/90 backdrop-blur-[12px] border border-outline-variant rounded p-2 text-xs font-label-mono shadow-xl pointer-events-none transform translate-x-1/2 -translate-y-1/2">
+<div class="text-secondary mb-1">TRK-014 (Active)</div>
+<div class="text-on-surface-variant">Load: 85%</div>
+<div class="text-on-surface-variant">ETA: 2m 14s</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- SideNavBar -->
+<aside class="bg-surface border-l border-outline-variant shadow-lg fixed top-0 right-0 h-full w-[280px] z-50 flex flex-col py-md px-sm rtl font-body-md text-body-md">
+<!-- Brand Header -->
+<div class="flex items-center gap-md px-md pb-lg mb-sm border-b border-outline-variant">
+<div class="w-10 h-10 rounded-lg bg-surface-variant overflow-hidden border border-outline-variant flex-shrink-0">
+<img alt="لوگوی استخراج معدن" class="w-full h-full object-cover" data-alt="A minimalist, geometric logo design for an industrial mining management system. The logo features sharp angles and intersecting lines in a vibrant 'Mining Gold' and dark graphite color palette. The aesthetic is modern corporate and highly technical, set against a dark background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsQiVD-698bfQeHtQnrt9OD0jakpKaSYxx2iieiBjGYhjZMG0bQFwKdMCaVFgf5k0H_maA1lOcftueyEsNFFCG2HsSy_gd0NgFCj0cMPXN_ylbEd9_mW26BoBQ4xuezipZ7nH74OEXjE57wjcf8lYlgR-RW-yIEUqMRLjU5rrKkjHkB7y_eF50BiO47gb2hDQ8eq-zNxTHbwwIOthbK8Dg3GUWVgs5Mj6O6gkac_feZmRD7WqxTAKV"/>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary tracking-tight">مدیریت ناوگان</span>
+<span class="font-label-mono text-label-mono text-on-surface-variant text-xs">عملیات صنعتی</span>
+</div>
+</div>
+<!-- Primary Nav -->
+<nav class="flex-1 overflow-y-auto mt-sm flex flex-col gap-1 px-1 custom-scrollbar">
+<a class="flex items-center gap-md px-md py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span>داشبورد</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">analytics</span>
+<span>عملکرد من</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">psychology</span>
+<span>مأموریت هوشمند</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">local_shipping</span>
+<span>سلامت کامیون</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">sensors</span>
+<span>داده‌های IoT</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">smart_toy</span>
+<span>دستیار هوشمند</span>
+</a>
+<!-- ACTIVE ITEM: Simulation -->
+<a class="flex items-center gap-md px-md py-3 bg-primary text-on-primary rounded-xl font-bold active:scale-95 duration-150 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">precision_manufacturing</span>
+<span>شبیه‌سازی</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">compare_arrows</span>
+<span>مقایسه عملکرد</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications_active</span>
+<span>هشدارها</span>
+</a>
+<a class="flex items-center gap-md px-md py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">person</span>
+<span>پروفایل</span>
+</a>
+</nav>
+<!-- CTA & Footer Nav -->
+<div class="mt-auto pt-md border-t border-outline-variant flex flex-col gap-sm">
+<button class="w-full bg-surface-container-high text-primary border border-outline-variant rounded-xl py-3 px-4 font-bold flex items-center justify-center gap-2 hover:bg-surface-variant transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined text-sm">summarize</span>
+                    گزارش سریع
+                </button>
+<a class="flex items-center gap-md px-md py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span>تنظیمات</span>
+</a>
+</div>
+</aside>
+</div>
+<!-- Custom Scrollbar Style for the layout -->
+<style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #2f353c; /* surface-variant */
+            border-radius: 10px;
+        }
+        .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+            background-color: #4f4536; /* outline-variant */
+        }
+    </style>
+</body></html>

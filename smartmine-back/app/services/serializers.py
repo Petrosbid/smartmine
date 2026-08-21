@@ -57,6 +57,7 @@ def to_telemetry_schema(row: Telemetry) -> TelemetryResponse:
 
 def to_mission_schema(mission: Mission, truck_code: str, shovel_code: str, crusher_code: str) -> MissionResponse:
     return MissionResponse(
+        mission_id=mission.id,
         truck_id=truck_code,
         shovel_id=shovel_code,
         crusher_id=crusher_code,
@@ -64,6 +65,7 @@ def to_mission_schema(mission: Mission, truck_code: str, shovel_code: str, crush
         eta_min=mission.eta_min,
         cycle_time_min=mission.cycle_time_min,
         status=mission.status.value,
+        created_at=mission.created_at,
     )
 
 

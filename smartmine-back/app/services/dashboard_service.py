@@ -1,8 +1,10 @@
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.exceptions import NotFoundError
 from app.models.mission import Crusher, Shovel
 from app.models.truck import Truck
+from app.algorithms.dispatch import recommend_dispatch
 from app.repositories.alert_repository import AlertRepository
 from app.repositories.driver_repository import DriverRepository
 from app.repositories.mission_repository import MissionRepository
@@ -29,7 +31,7 @@ class DashboardService:
         self.mission_repo = MissionRepository(db)
         self.alert_repo = AlertRepository(db)
 
-    def get_dashboard(self, driver_id: str = "D-102") -> DashboardResponse:
+    def get_dashboard(self, driver_id: str) -> DashboardResponse:
         driver = self.driver_repo.get_by_code(driver_id)
         if driver is None:
             raise NotFoundError(f"Driver {driver_id} was not found")
@@ -69,6 +71,22 @@ class DashboardService:
             "efficiency_score": latest_perf.efficiency_score if latest_perf else 0.0,
         }
 
+        shovel_payload = [
+            {
+                "id": s.shovel_code,
+                "queue": s.queue_count,
+                "status": s.status,
+                "latitude": s.latitude,
+                "longitude": s.longitude,
+            }
+            for s in self.db.scalars(select(Shovel))
+        ]
+        best, _ = recommend_dispatch((truck.latitude, truck.longitude), truck.health_score, shovel_payload)
+        ai_recommendation_message = (
+            f"شاول پیشنهادی {best['shovel_id']} با زمان چرخه تخمینی "
+            f"{float(best['estimated_cycle_time']):.1f} دقیقه ({best['reason']})."
+        )
+
         return DashboardResponse(
             driver=to_driver_schema(driver),
             truck=to_truck_schema(truck, driver_code=driver.driver_code),
@@ -88,6 +106,6 @@ class DashboardService:
             ],
             recent_performance=[to_performance_history_schema(item) for item in perf_history],
             ai_recommendation={
-                "message": "Reduce waiting time by prioritizing low-queue shovels.",
+                "message": ai_recommendation_message,
             },
         )

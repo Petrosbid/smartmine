@@ -4,7 +4,6 @@ smartmine-back/.env
 smartmine-back/.venv/
 smartmine-back/.smartmine.db
 **/__pycache__/
-ui/
 smartmine-web/dist/
 smartmine-web/node_modules/
 smartmine-web/public/**

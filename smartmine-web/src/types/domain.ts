@@ -29,7 +29,7 @@ export interface Mission {
   toCrusher: string
   distanceKm: number
   etaMin: number
-  status: 'در حال حرکت' | 'منتظر' | 'آماده'
+  status: string
   cycleTimeMin: number
 }
 

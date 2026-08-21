@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html class="dark" dir="rtl" lang="fa"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>مأموریت هوشمند - تخصیص پویا</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;900&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#d3c4b1",
+                        "secondary-fixed-dim": "#61dd9c",
+                        "surface-dim": "#0e141a",
+                        "on-primary-fixed": "#271900",
+                        "surface-container-highest": "#2f353c",
+                        "surface-container-lowest": "#090f15",
+                        "on-secondary-fixed-variant": "#005231",
+                        "tertiary-container": "#ff8c88",
+                        "on-secondary": "#003921",
+                        "on-error": "#690005",
+                        "tertiary": "#ffb6b2",
+                        "surface-tint": "#f5bd58",
+                        "secondary-fixed": "#7ffab7",
+                        "primary": "#f7bf59",
+                        "on-tertiary-fixed": "#410005",
+                        "on-primary-container": "#573c00",
+                        "inverse-on-surface": "#2b3138",
+                        "background": "#0e141a",
+                        "surface": "#0e141a",
+                        "surface-container": "#1a2027",
+                        "on-tertiary": "#68000e",
+                        "on-secondary-fixed": "#002111",
+                        "secondary-container": "#17a56a",
+                        "on-primary": "#422c00",
+                        "outline": "#9c8f7d",
+                        "on-secondary-container": "#00311c",
+                        "error": "#ffb4ab",
+                        "surface-container-high": "#252b31",
+                        "surface-container-low": "#161c22",
+                        "error-container": "#93000a",
+                        "surface-bright": "#343a41",
+                        "surface-variant": "#2f353c",
+                        "on-primary-fixed-variant": "#5f4100",
+                        "on-surface": "#dde3ec",
+                        "on-tertiary-fixed-variant": "#8d131d",
+                        "tertiary-fixed-dim": "#ffb3af",
+                        "primary-fixed": "#ffdeaa",
+                        "secondary": "#61dd9c",
+                        "outline-variant": "#4f4536",
+                        "inverse-surface": "#dde3ec",
+                        "primary-container": "#d9a441",
+                        "on-error-container": "#ffdad6",
+                        "on-background": "#dde3ec",
+                        "primary-fixed-dim": "#f5bd58",
+                        "inverse-primary": "#7d5700",
+                        "on-tertiary-container": "#840b18",
+                        "tertiary-fixed": "#ffdad7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "margin-desktop": "32px",
+                        "lg": "24px",
+                        "xs": "4px",
+                        "2xl": "48px",
+                        "xl": "32px",
+                        "unit": "4px",
+                        "margin-mobile": "16px",
+                        "md": "16px",
+                        "sm": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Vazirmatn"],
+                        "telemetry-lg": ["JetBrains Mono"],
+                        "body-lg": ["Vazirmatn"],
+                        "headline-md": ["Vazirmatn"],
+                        "headline-lg": ["Vazirmatn"],
+                        "headline-lg-mobile": ["Vazirmatn"],
+                        "body-sm": ["Vazirmatn"],
+                        "display-lg": ["Vazirmatn"],
+                        "label-mono": ["JetBrains Mono"],
+                        "body-md": ["Vazirmatn"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "telemetry-lg": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "60px", "fontWeight": "700" }],
+                        "label-mono": ["14px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(22, 34, 45, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .bg-mining-gold-gradient {
+            background: linear-gradient(180deg, #f7bf59 0%, #d9a441 100%);
+        }
+        .inner-shadow-tactile {
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen overflow-x-hidden selection:bg-primary selection:text-on-primary antialiased">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 right-[280px] h-16 z-40 shadow-sm bg-surface-container dark:bg-surface-container flex items-center justify-between px-lg rtl border-b border-outline-variant transition-all">
+<div class="flex items-center gap-4">
+<span class="font-headline-sm text-headline-sm font-black text-primary" dir="ltr">D-102 | T-27</span>
+<div class="hidden md:flex gap-6">
+<a class="text-on-surface-variant hover:text-primary transition-all active:opacity-80" href="#">شیفت صبح</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-primary-container text-on-primary-container px-4 py-1.5 rounded-full font-label-mono text-label-mono inner-shadow-tactile">
+                وضعیت سیستم
+            </button>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<button class="hover:text-primary p-2 transition-colors"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">notifications</span></button>
+<button class="hover:text-primary p-2 transition-colors"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings_input_antenna</span></button>
+<button class="hover:text-primary p-2 transition-colors"><span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">help</span></button>
+</div>
+<img alt="پروفایل راننده" class="w-10 h-10 rounded-full border border-outline-variant object-cover ml-2" data-alt="A futuristic circular avatar portrait of an industrial driver wearing an advanced headset, glowing amber lighting, deep graphite background, high quality 3d render style, corporate tech aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7NQLKiIoaqGLn0_xciBfKIjOB5vDqfZL7YI6T4cAfXf1sgM3oRecWJHtLO-UZNY7M9cSbYOu8_lvOclaxVNTrbjftj7-oIFI-XodIe4kIuBk5zaIPzypTpjaYr3t22bSFj3dOMrm-TQ5c0UDCjL9urgDSIwWnk_lmpvHSsMWsdpitBwPpMpbrOVV3ADK6MWMOXgtA-40NPnqPVXI81JDhbxvx9bbIxaSrCEpaMEP_H8vXUPUGvAsr"/>
+</div>
+</header>
+<!-- SideNavBar -->
+<nav class="fixed top-0 right-0 h-full w-[280px] z-50 shadow-lg border-l border-outline-variant bg-surface dark:bg-surface flex flex-col py-md px-sm rtl font-headline-sm text-headline-sm font-body-md text-body-md text-primary dark:text-primary">
+<div class="flex items-center gap-3 px-4 py-4 mb-6">
+<img alt="لوگوی استخراج معدن" class="w-12 h-12 rounded-lg object-cover border border-outline-variant" data-alt="A stylized geometric logo representing heavy mining machinery and data nodes, deep black background with bright yellow-gold highlights, sharp angles, vector art style, industrial minimalism." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZJUz4QDQEKPJSD0CL8qFA54kd1J2KZIm4E0Yw-xqyWqjbvAXWL667tKVjKU-wCPnlxv72nK3GYmdT_GOTHuTz0nwJWe7Et9EHp04uKopTVeqBftx_J17TWzSB0tfsYFXozQGxcorMr3OISehBHsUQEqWtVfSz_qpkqSkN4YBbh8FvVgR_dXaae114lzNz124reJg3dTM0HCTx5LJUjLjEQWdCiQSizQEvY4uzCpwuLpT7ODW-m0kB"/>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary">مدیریت ناوگان</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">عملیات صنعتی</p>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto space-y-1 pr-2 custom-scrollbar">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">dashboard</span>
+<span>داشبورد</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">analytics</span>
+<span>عملکرد من</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-on-primary font-bold shadow-md active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<span>مأموریت هوشمند</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">local_shipping</span>
+<span>سلامت کامیون</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">sensors</span>
+<span>داده‌های IoT</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">smart_toy</span>
+<span>دستیار هوشمند</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">precision_manufacturing</span>
+<span>شبیه‌سازی</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">compare_arrows</span>
+<span>مقایسه عملکرد</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">notifications_active</span>
+<span>هشدارها</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">person</span>
+<span>پروفایل</span>
+</a>
+</div>
+<div class="mt-auto pt-4 border-t border-outline-variant space-y-3">
+<button class="w-full bg-mining-gold-gradient text-on-primary py-3 rounded-xl font-headline-sm text-headline-sm font-bold shadow-md inner-shadow-tactile hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add</span>
+                گزارش سریع
+            </button>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors active:scale-95 duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">settings</span>
+<span>تنظیمات</span>
+</a>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="mr-[280px] pt-16 min-h-screen bg-surface-lowest">
+<div class="p-margin-desktop space-y-gutter max-w-7xl mx-auto">
+<!-- Header Section -->
+<div class="flex justify-between items-end mb-8 border-b border-outline-variant pb-4">
+<div>
+<h2 class="font-headline-lg text-headline-lg font-bold text-primary mb-2 tracking-tight">مأموریت هوشمند - تخصیص پویا</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">بهینه‌سازی بلادرنگ ناوگان با استفاده از هوش مصنوعی</p>
+</div>
+<div class="flex items-center gap-2 bg-surface-container px-4 py-2 rounded-lg border border-outline-variant">
+<div class="w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"></div>
+<span class="font-label-mono text-label-mono text-secondary-fixed">Live Telemetry Active</span>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-gutter">
+<!-- Main Map View (Spans 8 cols) -->
+<div class="xl:col-span-8 bg-surface-container rounded-xl border border-surface-variant overflow-hidden relative h-[600px] shadow-lg flex flex-col">
+<div class="bg-surface py-3 px-4 border-b border-surface-variant flex justify-between items-center z-10 relative">
+<span class="font-label-mono text-label-mono text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">map</span>
+                            نقشه عملیاتی معدن
+                        </span>
+<div class="flex gap-2">
+<button class="p-1 rounded bg-surface-container-high text-on-surface-variant hover:text-primary border border-outline-variant"><span class="material-symbols-outlined text-sm">zoom_in</span></button>
+<button class="p-1 rounded bg-surface-container-high text-on-surface-variant hover:text-primary border border-outline-variant"><span class="material-symbols-outlined text-sm">zoom_out</span></button>
+</div>
+</div>
+<!-- Simulated Map Area -->
+<div class="flex-1 relative bg-[#0a0f14] w-full h-full overflow-hidden" data-alt="A top-down stylized view of an open-pit mine topography map, dark graphite background with neon blue contour lines, highly detailed, futuristic UI aesthetic, industrial control room map, sharp 8k resolution." data-location="Kerman" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA0m00PR9lWWwAyWb-b9__yUBm1e8xxugUnjpJ5-WnGDCXyn4FRawDpDUVRs03BrMFesLe2isL2Q-RUhr7WsuboEL3wgJ37ORGsWVHHSUV1R_m-_7NlX5ufjo1mXtAZe7_FGqPVFyihCvbJgNE6Ui_ep-MQegi6hhJH65d-gHC74wPhs3WyTp0AZzMFIiAoQTYIInLQqfTv0nyaozre-v0KOzfdliFeBE6YEsO5ugi1zjZq-slcJdaG'); background-size: cover; background-position: center;">
+<!-- Route Line Overlay (SVG) -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" viewbox="0 0 800 600">
+<!-- Existing routes (dashed, low opacity) -->
+<path d="M 200 400 L 350 250 L 500 200 L 650 300" fill="none" opacity="0.6" stroke="#4f4536" stroke-dasharray="4 4" stroke-width="2"></path>
+<!-- Recommended Smart Route (solid primary, animated) -->
+<path class="animate-pulse" d="M 150 450 Q 300 350 400 300 T 600 150" fill="none" stroke="#f7bf59" stroke-linecap="round" stroke-width="4" style="filter: drop-shadow(0 0 8px rgba(247,191,89,0.5));"></path>
+</svg>
+<!-- Points of Interest -->
+<!-- Shovel 02 (Congested) -->
+<div class="absolute top-[200px] left-[500px] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+<div class="bg-error-container/20 border border-error rounded-full p-2 mb-1 animate-pulse">
+<span class="material-symbols-outlined text-error">front_loader</span>
+</div>
+<div class="glass-panel px-2 py-1 rounded border border-error text-center whitespace-nowrap">
+<p class="font-label-mono text-label-mono text-on-surface text-[10px]">Shovel 02</p>
+<p class="font-label-mono text-label-mono text-error text-[10px] font-bold">8 Trucks - Congested</p>
+</div>
+</div>
+<!-- Shovel 03 (Recommended) -->
+<div class="absolute top-[300px] left-[400px] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-20">
+<div class="bg-primary/20 border-2 border-primary rounded-full p-3 mb-1 shadow-[0_0_15px_rgba(247,191,89,0.4)]">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">front_loader</span>
+</div>
+<div class="glass-panel px-3 py-1.5 rounded border border-primary text-center whitespace-nowrap shadow-lg">
+<p class="font-label-mono text-label-mono text-on-surface text-xs">Shovel 03</p>
+<p class="font-label-mono text-label-mono text-primary text-xs font-bold">Target</p>
+</div>
+</div>
+<!-- Crusher 01 (Destination) -->
+<div class="absolute top-[150px] left-[600px] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+<div class="bg-secondary-container/20 border border-secondary rounded-lg p-2 mb-1">
+<span class="material-symbols-outlined text-secondary">factory</span>
+</div>
+<div class="glass-panel px-2 py-1 rounded border border-surface-variant text-center whitespace-nowrap">
+<p class="font-label-mono text-label-mono text-on-surface text-[10px]">Crusher 01</p>
+</div>
+</div>
+<!-- Current Truck (T-27) -->
+<div class="absolute top-[450px] left-[150px] transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-30">
+<div class="bg-surface border-2 border-primary rounded px-2 py-1 shadow-lg flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-sm">local_shipping</span>
+<span class="font-label-mono text-label-mono text-primary font-bold">T-27</span>
+</div>
+</div>
+</div>
+</div>
+<!-- AI Dispatch & Prediction Panel (Spans 4 cols) -->
+<div class="xl:col-span-4 flex flex-col gap-gutter">
+<!-- AI Recommendation Card -->
+<div class="bg-surface-container rounded-xl border border-primary/30 p-6 shadow-lg relative overflow-hidden flex-1">
+<!-- Subtle background glow -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
+<div class="flex items-center gap-3 mb-6 relative z-10">
+<div class="bg-primary-container/20 p-2 rounded-lg border border-primary/40 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">پیشنهاد هوش مصنوعی</h3>
+</div>
+<div class="glass-panel rounded-lg border border-surface-variant p-4 mb-6 relative z-10">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-mono text-label-mono text-on-surface-variant">Vehicle</span>
+<span class="font-label-mono text-label-mono text-primary font-bold">T-27</span>
+</div>
+<div class="relative py-4">
+<!-- Vertical timeline line -->
+<div class="absolute right-3.5 top-8 bottom-2 w-0.5 bg-outline-variant"></div>
+<div class="flex items-start gap-4 mb-4 relative">
+<div class="w-8 h-8 rounded-full bg-surface border-2 border-primary flex items-center justify-center z-10 shrink-0">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+</div>
+<div class="flex-1 pt-1">
+<p class="font-label-mono text-label-mono text-on-surface-variant text-xs mb-1">بارگیری (مبدأ)</p>
+<p class="font-body-md text-body-md font-bold text-on-surface">Shovel 03</p>
+</div>
+</div>
+<div class="flex items-start gap-4 relative">
+<div class="w-8 h-8 rounded-full bg-surface border-2 border-secondary flex items-center justify-center z-10 shrink-0">
+<span class="material-symbols-outlined text-secondary text-sm">flag</span>
+</div>
+<div class="flex-1 pt-1">
+<p class="font-label-mono text-label-mono text-on-surface-variant text-xs mb-1">تخلیه (مقصد)</p>
+<p class="font-body-md text-body-md font-bold text-on-surface">Crusher 01</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Prediction Metrics -->
+<div class="grid grid-cols-2 gap-4 mb-8 relative z-10">
+<div class="bg-surface-container-high rounded-lg p-3 border border-surface-variant">
+<p class="font-label-mono text-label-mono text-on-surface-variant text-xs mb-1">زمان چرخه فعلی</p>
+<div class="flex items-end gap-1">
+<span class="font-telemetry-lg text-telemetry-lg text-error">31</span>
+<span class="font-label-mono text-label-mono text-on-surface-variant mb-1">دقیقه</span>
+</div>
+</div>
+<div class="bg-surface-container-high rounded-lg p-3 border border-primary/30">
+<p class="font-label-mono text-label-mono text-on-surface-variant text-xs mb-1">زمان هوشمند</p>
+<div class="flex items-end gap-1">
+<span class="font-telemetry-lg text-telemetry-lg text-secondary">25</span>
+<span class="font-label-mono text-label-mono text-on-surface-variant mb-1">دقیقه</span>
+</div>
+<div class="mt-2 inline-flex items-center gap-1 bg-secondary-container/20 text-secondary px-2 py-0.5 rounded text-xs font-label-mono">
+<span class="material-symbols-outlined text-[14px]">trending_down</span>
+                                    19% بهبود
+                                </div>
+</div>
+</div>
+<button class="w-full bg-mining-gold-gradient text-on-primary py-4 rounded-xl font-headline-sm text-headline-sm font-bold shadow-lg inner-shadow-tactile hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 relative z-10 mt-auto">
+<span class="material-symbols-outlined">send</span>
+                            اعمال مأموریت پیشنهادی
+                        </button>
+</div>
+<!-- Secondary Info Card -->
+<div class="bg-surface-container rounded-xl border border-surface-variant p-4 shadow-sm">
+<h4 class="font-label-mono text-label-mono text-on-surface-variant border-b border-surface-variant pb-2 mb-3">دلیل تغییر مسیر</h4>
+<p class="font-body-sm text-body-sm text-on-surface leading-relaxed">
+                            تراکم بالا در Shovel 02 (۸ کامیون در صف). تغییر مسیر به Shovel 03 زمان انتظار را به صفر کاهش داده و راندمان مصرف سوخت را ۴٪ بهبود می‌بخشد.
+                        </p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html class="dark" dir="rtl" lang="fa"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>پروفایل راننده | SmartMine</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.0/Vazirmatn-font-face.css" rel="stylesheet" type="text/css"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ffb4ab",
+                        "surface-tint": "#f5bd58",
+                        "tertiary-fixed": "#ffdad7",
+                        "surface-container-highest": "#2f353c",
+                        "primary-container": "#d9a441",
+                        "outline": "#9c8f7d",
+                        "inverse-surface": "#dde3ec",
+                        "on-secondary-fixed-variant": "#005231",
+                        "surface-dim": "#0e141a",
+                        "surface-container-high": "#252b31",
+                        "secondary-fixed": "#7ffab7",
+                        "on-secondary-fixed": "#002111",
+                        "tertiary-fixed-dim": "#ffb3af",
+                        "surface-container-low": "#161c22",
+                        "secondary-fixed-dim": "#61dd9c",
+                        "inverse-primary": "#7d5700",
+                        "primary": "#f7bf59",
+                        "secondary": "#61dd9c",
+                        "primary-fixed-dim": "#f5bd58",
+                        "on-tertiary-fixed": "#410005",
+                        "on-tertiary": "#68000e",
+                        "primary-fixed": "#ffdeaa",
+                        "on-surface": "#dde3ec",
+                        "on-primary": "#422c00",
+                        "surface-bright": "#343a41",
+                        "on-tertiary-fixed-variant": "#8d131d",
+                        "on-primary-container": "#573c00",
+                        "tertiary-container": "#ff8c88",
+                        "surface-container-lowest": "#090f15",
+                        "on-secondary": "#003921",
+                        "secondary-container": "#17a56a",
+                        "surface": "#0e141a",
+                        "inverse-on-surface": "#2b3138",
+                        "on-background": "#dde3ec",
+                        "tertiary": "#ffb6b2",
+                        "background": "#0e141a",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-container": "#00311c",
+                        "outline-variant": "#4f4536",
+                        "on-error": "#690005",
+                        "error-container": "#93000a",
+                        "on-primary-fixed-variant": "#5f4100",
+                        "on-tertiary-container": "#840b18",
+                        "surface-container": "#1a2027",
+                        "on-surface-variant": "#d3c4b1",
+                        "surface-variant": "#2f353c",
+                        "on-primary-fixed": "#271900"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "2xl": "48px",
+                        "margin-desktop": "32px",
+                        "unit": "4px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "gutter": "16px",
+                        "xs": "4px",
+                        "margin-mobile": "16px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "label-mono": ["JetBrains Mono"],
+                        "headline-lg": ["Vazirmatn"],
+                        "body-sm": ["Vazirmatn"],
+                        "headline-md": ["Vazirmatn"],
+                        "headline-sm": ["Vazirmatn"],
+                        "body-lg": ["Vazirmatn"],
+                        "headline-lg-mobile": ["Vazirmatn"],
+                        "display-lg": ["Vazirmatn"],
+                        "body-md": ["Vazirmatn"],
+                        "telemetry-lg": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "label-mono": ["14px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "display-lg": ["48px", { "lineHeight": "60px", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "telemetry-lg": ["24px", { "lineHeight": "32px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #0B1117; color: #dde3ec; font-family: 'Vazirmatn', sans-serif; }
+        .glass-panel { background-color: rgba(22, 34, 45, 0.8); backdrop-filter: blur(12px); border: 1px solid #24313D; }
+        .tech-card { background-color: #111A23; border: 1px solid #24313D; }
+        .subtle-shadow { box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex text-on-surface">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col bg-surface-dim dark:bg-surface-dim docked fixed right-0 top-0 h-full w-[280px] border-l border-outline-variant py-md px-sm overflow-y-auto rtl z-50">
+<div class="mb-xl px-sm flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary text-3xl">smart_toy</span>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">SmartMine</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">مدیریت ناوگان صنعتی</p>
+</div>
+</div>
+<div class="flex flex-col gap-xs flex-1">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 font-headline-sm text-headline-sm" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>داشبورد</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 font-headline-sm text-headline-sm" href="#">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+<span>عملکرد</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 font-headline-sm text-headline-sm" href="#">
+<span class="material-symbols-outlined" data-icon="rocket_launch">rocket_launch</span>
+<span>ماموریت هوشمند</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 font-headline-sm text-headline-sm" href="#">
+<span class="material-symbols-outlined" data-icon="home_repair_service">home_repair_service</span>
+<span>سلامت کامیون</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 font-headline-sm text-headline-sm" href="#">
+<span class="material-symbols-outlined" data-icon="sensors">sensors</span>
+<span>داده‌های اینترنت اشیا</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 font-headline-sm text-headline-sm" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span>دستیار هوش مصنوعی</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 font-headline-sm text-headline-sm" href="#">
+<span class="material-symbols-outlined" data-icon="precision_manufacturing">precision_manufacturing</span>
+<span>شبیه‌سازی</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 font-headline-sm text-headline-sm" href="#">
+<span class="material-symbols-outlined" data-icon="compare_arrows">compare_arrows</span>
+<span>مقایسه</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 font-headline-sm text-headline-sm" href="#">
+<span class="material-symbols-outlined" data-icon="notifications_active">notifications_active</span>
+<span>هشدارها</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-primary-container bg-primary-container rounded-lg font-bold scale-95 active:scale-90 font-headline-sm text-headline-sm" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span>پروفایل</span>
+</a>
+</div>
+</nav>
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-surface docked fixed top-0 left-0 right-[280px] h-16 border-b border-outline-variant shadow-sm flex items-center justify-between px-lg rtl z-40 hidden md:flex">
+<div class="flex items-center gap-md">
+<span class="font-headline-sm text-headline-sm font-black text-primary">SmartMine Fleet</span>
+</div>
+<div class="flex items-center gap-lg">
+<div class="flex items-center gap-sm">
+<span class="font-label-mono text-label-mono text-primary font-bold bg-surface-container px-sm py-xs rounded">T-27 | D-102</span>
+<span class="font-label-mono text-label-mono text-secondary px-sm py-xs rounded border border-secondary">شیفت فعال</span>
+</div>
+<div class="flex items-center gap-sm text-on-surface-variant">
+<button class="opacity-80 hover:opacity-100 hover:text-primary transition-opacity p-xs">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<button class="opacity-80 hover:opacity-100 hover:text-primary transition-opacity p-xs">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 md:mr-[280px] md:mt-16 p-margin-mobile md:p-margin-desktop w-full overflow-x-hidden">
+<div class="max-w-7xl mx-auto space-y-gutter">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-md mb-xl">
+<div>
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">پروفایل راننده</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-unit">نمای کلی اطلاعات و عملکرد عملیاتی</p>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Driver Identity Card -->
+<div class="tech-card rounded-xl p-md md:col-span-4 flex flex-col justify-between">
+<div class="flex items-start gap-md mb-lg">
+<div class="w-20 h-20 rounded-full overflow-hidden border-2 border-primary">
+<img alt="راننده نمونه" class="w-full h-full object-cover" data-alt="A highly detailed portrait of a rugged, professional heavy machinery driver in a modern industrial setting. The lighting is cinematic, highlighting the driver's focus and experience. The background features blurred high-tech mining equipment in a dark, atmospheric environment with subtle gold and teal lighting accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCGNKuoZejBA3c-26G-bCUHQY4BMjkgK-ortIdNPTLjhOkQAFTL7dtrSeH0vzt1kkISq1917UKnwqSxEGcvHz7ldA1I_BAZvCViz4y1hD4ZarM9bZd-njQKZkD-Ux33neOYl4XGGCiOzAb8fT0-c3zooqgewxaVyoaxvcfrOfGEvRQJtC1vlLRcYeRVUOrNjqJbmeIEPzf9KH7S8EZP6VJc4Vt3eE2FoVcTO9jngVHtXXjc7e1EUOI"/>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">راننده نمونه</h3>
+<p class="font-label-mono text-label-mono text-primary mt-unit">D-102</p>
+<span class="inline-block mt-sm px-sm py-xs bg-surface-container rounded font-body-sm text-body-sm text-on-surface-variant">راننده کامیون سنگین</span>
+</div>
+</div>
+<div class="border-t border-outline-variant pt-md mt-auto">
+<div class="flex justify-between items-center mb-sm">
+<span class="font-body-sm text-body-sm text-on-surface-variant">کامیون فعال</span>
+<span class="font-label-mono text-label-mono text-primary bg-primary/10 px-sm py-xs rounded">T-27</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant">وضعیت</span>
+<span class="flex items-center gap-xs font-label-mono text-label-mono text-secondary">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                                در حال انجام ماموریت
+                            </span>
+</div>
+</div>
+</div>
+<!-- Performance Stats -->
+<div class="grid grid-cols-2 gap-gutter md:col-span-8">
+<!-- Stat 1 -->
+<div class="tech-card rounded-xl p-md subtle-shadow">
+<div class="flex items-center gap-sm mb-md text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">score</span>
+<span class="font-label-mono text-label-mono">میانگین امتیاز</span>
+</div>
+<div class="flex items-baseline gap-xs">
+<span class="font-display-lg text-display-lg text-primary">84</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/ 100</span>
+</div>
+</div>
+<!-- Stat 2 -->
+<div class="tech-card rounded-xl p-md subtle-shadow">
+<div class="flex items-center gap-sm mb-md text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">task_alt</span>
+<span class="font-label-mono text-label-mono">ماموریت‌های موفق</span>
+</div>
+<div class="flex items-baseline gap-xs">
+<span class="font-display-lg text-display-lg text-on-surface">126</span>
+</div>
+</div>
+<!-- Stat 3 -->
+<div class="tech-card rounded-xl p-md subtle-shadow">
+<div class="flex items-center gap-sm mb-md text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">weight</span>
+<span class="font-label-mono text-label-mono">تناژ کل</span>
+</div>
+<div class="flex items-baseline gap-xs">
+<span class="font-display-lg text-display-lg text-on-surface">4,820</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">ton</span>
+</div>
+</div>
+<!-- Stat 4 -->
+<div class="tech-card rounded-xl p-md subtle-shadow border-l-4 border-l-secondary">
+<div class="flex items-center gap-sm mb-md text-on-surface-variant">
+<span class="material-symbols-outlined text-xl">health_and_safety</span>
+<span class="font-label-mono text-label-mono">شاخص ایمنی</span>
+</div>
+<div class="flex items-baseline gap-xs">
+<span class="font-display-lg text-display-lg text-secondary">93%</span>
+</div>
+</div>
+</div>
+<!-- Certifications Section -->
+<div class="tech-card rounded-xl p-md md:col-span-12 mt-md">
+<h3 class="font-headline-sm text-headline-sm text-on-surface border-b border-outline-variant pb-sm mb-md">گواهینامه‌ها و آموزش‌های فنی</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<div class="bg-surface-container p-sm rounded-lg flex items-center gap-md border border-outline-variant">
+<div class="w-10 h-10 rounded bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">verified</span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface">رانندگی پایه یک هوشمند</p>
+<p class="font-body-sm text-body-sm text-secondary">معتبر تا ۲۰۲۵/۱۲</p>
+</div>
+</div>
+<div class="bg-surface-container p-sm rounded-lg flex items-center gap-md border border-outline-variant">
+<div class="w-10 h-10 rounded bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">construction</span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface">عیب‌یابی سطح ۱ کامیون</p>
+<p class="font-body-sm text-body-sm text-secondary">تکمیل شده</p>
+</div>
+</div>
+<div class="bg-surface-container p-sm rounded-lg flex items-center gap-md border border-error/30 opacity-70">
+<div class="w-10 h-10 rounded bg-error/20 flex items-center justify-center text-error">
+<span class="material-symbols-outlined">warning</span>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface">ایمنی در شرایط جوی سخت</p>
+<p class="font-body-sm text-body-sm text-error">نیاز به تمدید (۳۰ روز)</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

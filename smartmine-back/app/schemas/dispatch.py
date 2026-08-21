@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, Field
 
 
@@ -34,6 +36,7 @@ class DispatchStateResponse(BaseModel):
 
 
 class MissionResponse(BaseModel):
+    mission_id: int
     truck_id: str
     shovel_id: str
     crusher_id: str
@@ -41,3 +44,8 @@ class MissionResponse(BaseModel):
     eta_min: int
     cycle_time_min: float
     status: str
+    created_at: datetime
+
+
+class MissionTransitionRequest(BaseModel):
+    status: str = Field(..., min_length=3)

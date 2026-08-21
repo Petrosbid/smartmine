@@ -7,6 +7,10 @@ export const AppShell = ({ children }: { children?: ReactNode }) => {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
 
+  const toggleCollapse = (): void => {
+    setCollapsed((prev) => !prev)
+  }
+
   const closeMobile = (): void => {
     setMobileOpen(false)
   }
@@ -14,7 +18,11 @@ export const AppShell = ({ children }: { children?: ReactNode }) => {
   return (
     <div className="app-shell">
       <div className={`app-shell__sidebar-wrap ${mobileOpen ? 'open' : ''}`}>
-        <Sidebar collapsed={collapsed} closeMobile={closeMobile} />
+        <Sidebar
+          collapsed={collapsed}
+          onToggleCollapse={toggleCollapse}
+          closeMobile={closeMobile}
+        />
       </div>
 
       {mobileOpen && (
@@ -28,15 +36,6 @@ export const AppShell = ({ children }: { children?: ReactNode }) => {
 
       <div className="app-shell__content">
         <AppHeader onMenuClick={() => setMobileOpen(true)} />
-        <div className="layout-controls">
-          <button
-            type="button"
-            className="icon-btn"
-            onClick={() => setCollapsed((prev) => !prev)}
-          >
-            {collapsed ? 'بازکردن منو' : 'جمع‌کردن منو'}
-          </button>
-        </div>
         <main>{children ?? <Outlet />}</main>
       </div>
     </div>

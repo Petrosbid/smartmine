@@ -47,6 +47,7 @@ export interface TelemetryDto {
 }
 
 export interface MissionDto {
+  mission_id: number
   truck_id: string
   shovel_id: string
   crusher_id: string
@@ -54,6 +55,7 @@ export interface MissionDto {
   eta_min: number
   cycle_time_min: number
   status: string
+  created_at: string
 }
 
 export interface DashboardResponseDto {
@@ -112,6 +114,15 @@ export interface DispatchRecommendationDto {
   estimated_improvement: number
   reason: string
   score_breakdown: Record<string, number>
+}
+
+export interface DispatchStateDto {
+  trucks: Array<{ id: string; status: string }>
+  shovels: Array<{ id: string; queue: number; status: string }>
+  crushers: Array<{ id: string; status: string }>
+  routes: Array<{ from: string; to: string; distance_km: number }>
+  queues: Array<{ shovel: string; trucks: number }>
+  missions: Array<{ truck_id: string; shovel_id: string; eta_min: number; status: string }>
 }
 
 export interface NotificationDto {

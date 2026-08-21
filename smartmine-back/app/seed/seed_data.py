@@ -248,7 +248,7 @@ def _seed_initial_mission(db: Session) -> None:
             distance_km=2.4,
             eta_min=8,
             cycle_time_min=31.0,
-            status=MissionStatus.IN_PROGRESS,
+            status=MissionStatus.EN_ROUTE_TO_SHOVEL,
         )
     )
 

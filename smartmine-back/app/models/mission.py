@@ -37,4 +37,4 @@ class Mission(Base, TimestampMixin):
     distance_km: Mapped[float] = mapped_column(Float)
     eta_min: Mapped[int] = mapped_column(Integer)
     cycle_time_min: Mapped[float] = mapped_column(Float)
-    status: Mapped[MissionStatus] = mapped_column(Enum(MissionStatus), default=MissionStatus.READY)
+    status: Mapped[MissionStatus] = mapped_column(Enum(MissionStatus), default=MissionStatus.ASSIGNED)
