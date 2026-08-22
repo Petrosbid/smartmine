@@ -10,3 +10,7 @@ smartmine-web/public/**
 smartmine.db
 smartmine-web/src/assets/vite.svg
 smartmine-web/src/assets/typescript.svg
+Report.md
+SmartMine_Prototype_Implementation.md
+pdf_summary.txt
+project.pdf

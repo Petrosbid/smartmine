@@ -1,6 +1,5 @@
-import { Bell, LogOut, Menu, Monitor, User } from 'lucide-react'
+import { Bell, LogOut, Menu, User } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Button } from '../ui/Button'
 import { routes } from '../../constants/routes'
 import { useAppState } from '../../context/AppStateContext'
 
@@ -25,7 +24,7 @@ interface AppHeaderProps {
 export const AppHeader = ({ onMenuClick }: AppHeaderProps) => {
   const location = useLocation()
   const navigate = useNavigate()
-  const { session, logout, presentationMode, togglePresentationMode, notifications } = useAppState()
+  const { session, logout, notifications } = useAppState()
   const pageInfo = titleMap[location.pathname] ?? { title: 'داشبورد', subtitle: 'SmartMine' }
   const unreadCount = notifications.filter((n) => !n.read).length
 

@@ -15,7 +15,6 @@ import {
 } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 import { routes } from '../../constants/routes'
-import { DEMO_MODE } from '../../data/mockData'
 import { useAppState } from '../../context/AppStateContext'
 
 interface SidebarProps {
