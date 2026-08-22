@@ -25,36 +25,36 @@
 
 </div>
 
-## screenshots
+## 📸 screenshots
 
 <div align="center">
   <table>
     <tr>
       <td align="center">
-        <img src="https://github.com/user-attachments/assets/a42f3312-c98a-433c-b66b-85006126d874" width="180" />
+        <img src="https://github.com/user-attachments/assets/a42f3312-c98a-433c-b66b-85006126d874" width="220" />
       </td>
       <td align="center">
-        <img src="https://github.com/user-attachments/assets/4c5de7b3-abd3-4091-b93f-19177d3f6b4c" width="180" />
+        <img src="https://github.com/user-attachments/assets/4c5de7b3-abd3-4091-b93f-19177d3f6b4c" width="220" />
       </td>
       <td align="center">
-        <img src="https://github.com/user-attachments/assets/a556e4d8-e378-4032-aff2-a3dc5530f9c8" width="180" />
+        <img src="https://github.com/user-attachments/assets/a556e4d8-e378-4032-aff2-a3dc5530f9c8" width="220" />
       </td>
       <td align="center">
-        <img src="https://github.com/user-attachments/assets/2f77c742-b129-40e3-af94-7e39b90a1b29" width="180" />
+        <img src="https://github.com/user-attachments/assets/2f77c742-b129-40e3-af94-7e39b90a1b29" width="220" />
       </td>
     </tr>
     <tr>
       <td align="center">
-        <img src="https://github.com/user-attachments/assets/04011bd8-dafb-491f-a55a-d0b442f78230" width="180" />
+        <img src="https://github.com/user-attachments/assets/04011bd8-dafb-491f-a55a-d0b442f78230" width="220" />
       </td>
       <td align="center">
-        <img src="https://github.com/user-attachments/assets/c1d4e814-8edd-414e-86cb-540018e67324" width="180" />
+        <img src="https://github.com/user-attachments/assets/c1d4e814-8edd-414e-86cb-540018e67324" width="220" />
       </td>
       <td align="center">
-        <img width="180" src="https://github.com/user-attachments/assets/7110ee53-3b26-4459-a0ba-55758c94c565" />
+        <img width="220" src="https://github.com/user-attachments/assets/7110ee53-3b26-4459-a0ba-55758c94c565" />
       </td>
       <td align="center">
-        <img width="180" src="https://github.com/user-attachments/assets/62b921d2-75a4-4b1e-9f7b-966324f4838c" />
+        <img width="220" src="https://github.com/user-attachments/assets/62b921d2-75a4-4b1e-9f7b-966324f4838c" />
       </td>
     </tr>
   </table>
